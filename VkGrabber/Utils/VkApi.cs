@@ -12,21 +12,28 @@ namespace VkGrabber.Utils
     {
         const string BaseUrl = "https://api.vk.com/method";
 
-        readonly string _access_token;
-        readonly string _secretKey;
+        private readonly VkSettings _settings;
 
-        public VkApi(string access_token, string secretKey)
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="settings"></param>
+        public VkApi(VkSettings settings)
         {
-            _access_token = access_token;
-            _secretKey = secretKey;
+            _settings = settings;
         }
 
+        /// <summary>
+        /// Выполнить запрос
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public T Execute<T>(RestRequest request) where T : new()
         {
             var client = new RestClient();
             client.BaseUrl = new Uri(BaseUrl);
-            //client.Authenticator = new HttpBasicAuthenticator(_accountSid, _secretKey);
-            request.AddParameter("access_token", _access_token);
+            request.AddParameter("access_token", _settings.AccessToken);
             request.AddParameter("v", "5.53");
             var response = client.Execute<T>(request);
 

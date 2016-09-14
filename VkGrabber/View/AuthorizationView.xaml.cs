@@ -34,7 +34,8 @@ namespace VkGrabber.View
             var urlParams = System.Web.HttpUtility.ParseQueryString(e.Uri.Fragment.Substring(1));
             App.VkSettings.AccessToken = urlParams.Get("access_token");
             App.VkSettings.UserId = urlParams.Get("user_id");
-            NavigationService.Navigate(new MainView());
+            App.NavigationService = new CustomNavigationService(NavigationService);
+            App.NavigationService.Navigate(new MainView());
         }
     }
 }

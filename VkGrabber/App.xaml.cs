@@ -14,8 +14,8 @@ namespace VkGrabber
     /// </summary>
     public partial class App : Application
     {
+        public static CustomNavigationService NavigationService { get; set; }
         public static VkSettings VkSettings { get; private set; }
-        public static NavigationService NavigationService { get; set; }
         public static VkApi VkApi { get; private set; }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace VkGrabber
         public App()
         {
             VkSettings = SettingsManager.DeSerializeObject<VkSettings>("settings") ?? new VkSettings();
-            VkApi = new VkApi(VkSettings.AccessToken, "");
+            VkApi = new VkApi(VkSettings);
         }
 
         protected override void OnExit(ExitEventArgs e)

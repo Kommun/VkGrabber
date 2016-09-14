@@ -81,7 +81,7 @@
     <Compile Include="Model\Rest\Post.cs" />
     <Compile Include="Model\Rest\ListResponse.cs" />
     <Compile Include="Utils\CustomCommand.cs" />
-    <Compile Include="Utils\NavigationService.cs" />
+    <Compile Include="Utils\CustomNavigationService.cs" />
     <Compile Include="Utils\VkApi.cs" />
     <Compile Include="Utils\SettingsManager.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
