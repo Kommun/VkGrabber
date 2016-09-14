@@ -75,13 +75,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Group.cs" />
     <Compile Include="Model\Rest\Attachment.cs" />
     <Compile Include="Model\Rest\Like.cs" />
     <Compile Include="Model\Rest\Photo.cs" />
     <Compile Include="Model\Rest\Post.cs" />
     <Compile Include="Model\Rest\ListResponse.cs" />
+    <Compile Include="Model\Rest\Repost.cs" />
     <Compile Include="Utils\CustomCommand.cs" />
     <Compile Include="Utils\CustomNavigationService.cs" />
+    <Compile Include="Utils\PropertyChangedBase.cs" />
     <Compile Include="Utils\VkApi.cs" />
     <Compile Include="Utils\SettingsManager.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />

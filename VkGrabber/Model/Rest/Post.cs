@@ -32,5 +32,10 @@ namespace VkGrabber.Model.Rest
         /// Лайки
         /// </summary>
         public Like Likes { get; set; }
+
+        /// <summary>
+        /// Репосты
+        /// </summary>
+        public Repost Reposts { get; set; }
     }
 }

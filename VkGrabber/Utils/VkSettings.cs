@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VkGrabber.Model;
 
 namespace VkGrabber.Utils
 {
@@ -25,7 +26,7 @@ namespace VkGrabber.Utils
         /// <summary>
         /// Список групп, из которых будут браться посты
         /// </summary>
-        public string GroupsToGrab { get; set; }
+        public List<Group> Groups { get; set; } = new List<Group>();
 
         /// <summary>
         /// Название целевой группы

@@ -31,6 +31,9 @@ namespace VkGrabber.View
 
         private void WbAuthorization_Navigated(object sender, NavigationEventArgs e)
         {
+            if (string.IsNullOrEmpty(e.Uri.Fragment))
+                return;
+
             var urlParams = System.Web.HttpUtility.ParseQueryString(e.Uri.Fragment.Substring(1));
             App.VkSettings.AccessToken = urlParams.Get("access_token");
             App.VkSettings.UserId = urlParams.Get("user_id");

@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using VkGrabber.Utils;
+using VkGrabber.Model.Rest;
 
 namespace VkGrabber.ViewModel
 {
-    public class MainViewModel
+    public class MainViewModel : PropertyChangedBase
     {
         /// <summary>
         /// Получить список постов
@@ -22,6 +24,8 @@ namespace VkGrabber.ViewModel
         {
             get { return App.VkSettings; }
         }
+
+        public List<Post> FilteredPosts { get; set; }
 
         /// <summary>
         /// Конструктор
@@ -37,13 +41,14 @@ namespace VkGrabber.ViewModel
         /// <param name="parameter"></param>
         private void Grab(object parameter)
         {
-            var groups = VkSettings.GroupsToGrab.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var group in groups)
+            foreach (var group in VkSettings.Groups)
             {
-                var posts = App.VkApi.GetPosts(group, 1);
+                var posts = App.VkApi.GetPosts(group.Name, 100);
+                FilteredPosts = posts.Items.Where(p => p.Likes.Count >= group.LikeCount && p.Reposts.Count >= group.RepostCount).ToList();
+                OnPropertyChanged("FilteredPosts");
                 try
                 {
-                    System.Windows.MessageBox.Show(posts.Items[0].Likes.User_Likes.ToString());
+                    //System.Windows.MessageBox.Show(posts.Items[0].Text.ToString());
                 }
                 catch (Exception e)
                 {

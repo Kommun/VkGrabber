@@ -7,16 +7,51 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300">
 
-    <StackPanel>
-        <TextBlock Text="Названия групп (каждое в новой строке)"/>
-        <TextBox Text="{Binding VkSettings.GroupsToGrab, Mode=TwoWay}"
-                 AcceptsReturn="True"/>
+    <Page.Resources>
 
-        <TextBlock Text="Название целевой группы (куда будут добавляться посты)"
+        <Style TargetType="{x:Type TextBlock}" x:Key="WrapText">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Название группы"
+                                    Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Кол-во лайков"
+                                    Binding="{Binding LikeCount}"/>
+                    <DataGridTextColumn Header="Кол-во репостов"
+                                    Binding="{Binding RepostCount}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBlock Text="Название целевой группы (куда будут добавляться посты)"
                    Margin="0,20,0,0"/>
-        <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
+            <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
 
-        <Button Content="Получить список постов"
+            <Button Content="Получить список постов"
                 Command="{Binding GrabCommand}"/>
-    </StackPanel>
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
+                      AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                      Grid.Row="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Текст"
+                                        Binding="{Binding Text}"
+                                        Width="*"
+                                        ElementStyle="{StaticResource WrapText}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
 </Page>
