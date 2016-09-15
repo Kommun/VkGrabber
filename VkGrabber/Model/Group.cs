@@ -22,5 +22,10 @@ namespace VkGrabber.Model
         /// Минимальное количество репостов
         /// </summary>
         public int RepostCount { get; set; }
+
+        /// <summary>
+        /// Сдвиг
+        /// </summary>
+        public int Offset { get; set; }
     }
 }

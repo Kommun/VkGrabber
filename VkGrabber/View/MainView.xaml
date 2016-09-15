@@ -13,6 +13,35 @@
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
 
+        <DataTemplate x:Key="postTemplate">
+            <Border BorderThickness="0,0,0,2"
+                    BorderBrush="Gray"
+                    Padding="0,5"
+                    Margin="0,5">
+                <StackPanel>
+                    <TextBox Text="{Binding Text, Mode=TwoWay}"
+                             TextWrapping="Wrap"
+                             HorizontalAlignment="Stretch"
+                             Background="Transparent"
+                             BorderThickness="0"/>
+                    <ItemsControl ItemsSource="{Binding Attachments}"
+                                  Grid.Row="1">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Photo.Photo_604}"
+                                       MaxHeight="200"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
     </Page.Resources>
 
     <Grid>
@@ -20,38 +49,49 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
-                      AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Название группы"
-                                    Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Кол-во лайков"
-                                    Binding="{Binding LikeCount}"/>
-                    <DataGridTextColumn Header="Кол-во репостов"
-                                    Binding="{Binding RepostCount}"/>
-                </DataGrid.Columns>
-            </DataGrid>
+        <Expander Header="Настройки"
+                  IsExpanded="{Binding IsSettingsExpanded}">
+            <StackPanel>
+                <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
+                          AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Название группы"
+                                            Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="Кол-во лайков"
+                                            Binding="{Binding LikeCount}"/>
+                        <DataGridTextColumn Header="Кол-во репостов"
+                                            Binding="{Binding RepostCount}"/>
+                        <DataGridTextColumn Header="Сдвиг"
+                                            Binding="{Binding Offset}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
 
-            <TextBlock Text="Название целевой группы (куда будут добавляться посты)"
-                   Margin="0,20,0,0"/>
-            <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
+                <TextBlock Text="Id целевой группы (куда будут добавляться посты)"
+                           Margin="0,20,0,0"/>
+                <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
 
-            <Button Content="Получить список постов"
-                Command="{Binding GrabCommand}"/>
-        </StackPanel>
+                <Button Content="Получить список постов"
+                        Command="{Binding GrabCommand}"/>
+            </StackPanel>
+        </Expander>
 
-        <DataGrid ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
-                      AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                      Grid.Row="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Текст"
-                                        Binding="{Binding Text}"
-                                        Width="*"
-                                        ElementStyle="{StaticResource WrapText}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <ListView ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
+                  ItemTemplate="{StaticResource postTemplate}"
+                  HorizontalContentAlignment="Stretch"
+                  ScrollViewer.CanContentScroll="False"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  Grid.Row="1">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Запостить"
+                              Command="{Binding PostCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                    <MenuItem Header="Добавить с заданной датой"
+                              Command="{Binding PostAtTimeCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+        </ListView>
 
     </Grid>
 </Page>

@@ -13,6 +13,11 @@ namespace VkGrabber.Utils
         private NavigationService _navigationService;
 
         /// <summary>
+        /// Текущая страница
+        /// </summary>
+        public Page CurrentPage { get; set; }
+
+        /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="navigationService"></param>
@@ -27,6 +32,7 @@ namespace VkGrabber.Utils
         /// <param name="page"></param>
         public void Navigate(Page page)
         {
+            CurrentPage = page;
             _navigationService.Navigate(page);
         }
     }
