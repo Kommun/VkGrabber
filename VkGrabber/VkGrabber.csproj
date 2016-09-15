@@ -103,6 +103,7 @@
     <Compile Include="Controls\DateTimeDialog.xaml.cs">
       <DependentUpon>DateTimeDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Enums\Scope.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\Rest\ApiError.cs" />
     <Compile Include="Model\Rest\Attachment.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Model\Rest\ListResponse.cs" />
     <Compile Include="Model\Rest\Repost.cs" />
     <Compile Include="Model\Rest\ApiResponse.cs" />
+    <Compile Include="Model\Rest\WallUploadServer.cs" />
     <Compile Include="Utils\CustomCommand.cs" />
     <Compile Include="Utils\CustomNavigationService.cs" />
     <Compile Include="Utils\PropertyChangedBase.cs" />

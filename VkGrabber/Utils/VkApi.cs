@@ -82,12 +82,21 @@ namespace VkGrabber.Utils
             request.AddParameter("from_group", fromGroup);
             request.AddParameter("message", message);
             string attach = string.Join(",", attachments.Select(a => $"photo{a.Photo.Owner_Id}_{a.Photo.Id}"));
+
+            var b = GetWallUploadServer(groupId);
             request.AddParameter("attachments", attach);
 
             if (publishDate != null)
                 request.AddParameter("publish_date", publishDate.Value.ToUnixTimeSeconds());
 
             return Execute<object>(request);
+        }
+
+        public WallUploadServer GetWallUploadServer(string groupId)
+        {
+            var request = new RestRequest("photos.getWallUploadServer", Method.GET);
+            request.AddParameter("group_id", groupId);
+            return Execute<WallUploadServer>(request);
         }
     }
 }
