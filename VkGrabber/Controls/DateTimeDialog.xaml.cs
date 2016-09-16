@@ -19,6 +19,8 @@ namespace VkGrabber.Controls
     /// </summary>
     public partial class DateTimeDialog : Window
     {
+        private DateTime? _date;
+
         public DateTimeDialog()
         {
             InitializeComponent();
@@ -27,12 +29,13 @@ namespace VkGrabber.Controls
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Close();
+            _date = dp.Value;
         }
 
         public DateTime? ShowModal()
         {
             ShowDialog();
-            return dp.Value;
+            return _date;
         }
     }
 }

@@ -14,22 +14,46 @@
         </Style>
 
         <DataTemplate x:Key="postTemplate">
-            <Border BorderThickness="0,0,0,2"
+            <Border BorderThickness="1"
                     BorderBrush="Gray"
-                    Padding="0,5"
-                    Margin="0,5">
+                    Padding="20"
+                    Margin="0,5"
+                    Width="550"
+                    Background="White"
+                    VerticalAlignment="Top">
                 <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Margin="0,0,20,20">
+                            <Border Name="mask" Background="White" CornerRadius="50"/>
+                            <StackPanel>
+                                <StackPanel.OpacityMask>
+                                    <VisualBrush Visual="{Binding ElementName=mask}"/>
+                                </StackPanel.OpacityMask>
+                                <Image Source="{Binding GroupInfo.Photo_50}"/>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel>
+                            <TextBlock Text="{Binding GroupInfo.Name}"
+                                   FontSize="17"
+                                   FontWeight="SemiBold"
+                                   Foreground="SteelBlue"/>
+                            <TextBlock Text="{Binding LocalDate}"
+                                       Foreground="Gray"/>
+                        </StackPanel>
+                    </StackPanel>
                     <TextBox Text="{Binding Text, Mode=TwoWay}"
+                             AcceptsReturn="True"
                              TextWrapping="Wrap"
                              HorizontalAlignment="Stretch"
                              Background="Transparent"
-                             BorderThickness="0"/>
+                             BorderThickness="0"
+                             FontSize="17"/>
                     <ItemsControl ItemsSource="{Binding Attachments}"
                                   Grid.Row="1">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Image Source="{Binding Photo.Photo_604}"
-                                       MaxHeight="200"/>
+                                       MaxWidth="150"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
@@ -38,6 +62,17 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
+                    <Rectangle Height="1"
+                               Fill="LightGray"
+                               HorizontalAlignment="Stretch"
+                               Margin="0,15"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Likes.Count, StringFormat='❤ {0}'}"
+                                   Foreground="SteelBlue"/>
+                        <TextBlock Text="{Binding Reposts.Count, StringFormat='❤ {0}'}"
+                                   Foreground="SteelBlue"
+                                   Margin="10,0,0,0"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </DataTemplate>
@@ -75,23 +110,22 @@
             </StackPanel>
         </Expander>
 
-        <ListView ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
                   ItemTemplate="{StaticResource postTemplate}"
                   HorizontalContentAlignment="Stretch"
-                  ScrollViewer.CanContentScroll="False"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  Grid.Row="1">
-            <ListView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Запостить"
+                  Background="LightGray">
+                <ItemsControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Запостить"
                               Command="{Binding PostCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                    <MenuItem Header="Добавить с заданной датой"
+                        <MenuItem Header="Добавить с заданной датой"
                               Command="{Binding PostAtTimeCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                </ContextMenu>
-            </ListView.ContextMenu>
-        </ListView>
-
+                    </ContextMenu>
+                </ItemsControl.ContextMenu>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Page>

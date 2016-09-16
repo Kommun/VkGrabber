@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VkGrabber.Model;
+using VkGrabber.Enums;
 
 namespace VkGrabber.Utils
 {
     public class VkSettings
     {
         public const string AppId = "5627431";
-        public const int Scope = 8192;
+        public const long Scopes = (long)Scope.Wall + (long)Scope.Photos;
         public const string RedirectUri = "http://oauth.vk.com/blank.html";
 
         /// <summary>

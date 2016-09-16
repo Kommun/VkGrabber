@@ -26,7 +26,7 @@ namespace VkGrabber.View
             InitializeComponent();
             wbAuthorization.Navigated += WbAuthorization_Navigated;
             wbAuthorization.Navigate(string.Format("https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&display=page&response_type=token",
-                 VkSettings.AppId, VkSettings.Scope, VkSettings.RedirectUri));
+                 VkSettings.AppId, VkSettings.Scopes, VkSettings.RedirectUri));
         }
 
         private void WbAuthorization_Navigated(object sender, NavigationEventArgs e)

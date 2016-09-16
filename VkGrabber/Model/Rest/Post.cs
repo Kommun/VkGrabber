@@ -16,7 +16,7 @@ namespace VkGrabber.Model.Rest
         /// <summary>
         /// Дата
         /// </summary>
-        //public DateTime Date { get; set; }
+        public long Date { get; set; }
 
         /// <summary>
         /// Текст
@@ -37,5 +37,18 @@ namespace VkGrabber.Model.Rest
         /// Репосты
         /// </summary>
         public Repost Reposts { get; set; }
+
+        /// <summary>
+        /// Информация о группе
+        /// </summary>
+        public GroupInfo GroupInfo { get; set; }
+
+        /// <summary>
+        /// Локальное время
+        /// </summary>
+        public string LocalDate
+        {
+            get { return DateTimeOffset.FromUnixTimeSeconds(Date).ToLocalTime().ToString("dd MMM yyyy в HH:mm"); }
+        }
     }
 }

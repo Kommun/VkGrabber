@@ -78,7 +78,9 @@ namespace VkGrabber.ViewModel
             List<Post> posts = new List<Post>();
             foreach (var group in VkSettings.Groups)
             {
+                var groupInfo = App.VkApi.GetGroupsById(group.Name).SingleOrDefault();
                 var res = App.VkApi.GetPosts(group.Name, 100, group.Offset);
+                res.Items.ForEach(p => p.GroupInfo = groupInfo);
                 posts.AddRange(res.Items.Where(p => p.Likes.Count >= group.LikeCount && p.Reposts.Count >= group.RepostCount));
             }
 

@@ -8,5 +8,14 @@ namespace VkGrabber.Enums
 {
     public enum Scope
     {
+        /// <summary>
+        /// Стена
+        /// </summary>
+        Wall = 8192,
+
+        /// <summary>
+        /// Фото
+        /// </summary>
+        Photos = 4
     }
 }
