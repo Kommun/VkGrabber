@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Web;
 using VkGrabber.Utils;
 
 namespace VkGrabber.View
@@ -25,7 +26,10 @@ namespace VkGrabber.View
         {
             InitializeComponent();
             wbAuthorization.Navigated += WbAuthorization_Navigated;
-            wbAuthorization.Navigate(string.Format("https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&display=page&response_type=token",
+            //if (App.VkSettings.AccessToken != null)
+            //    wbAuthorization.Navigate(string.Format("https://vk.com"));
+            //        else
+           wbAuthorization.Navigate(string.Format("https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&display=page&response_type=token",
                  VkSettings.AppId, VkSettings.Scopes, VkSettings.RedirectUri));
         }
 
@@ -34,7 +38,7 @@ namespace VkGrabber.View
             if (string.IsNullOrEmpty(e.Uri.Fragment))
                 return;
 
-            var urlParams = System.Web.HttpUtility.ParseQueryString(e.Uri.Fragment.Substring(1));
+            var urlParams = HttpUtility.ParseQueryString(e.Uri.Fragment.Substring(1));
             App.VkSettings.AccessToken = urlParams.Get("access_token");
             App.VkSettings.UserId = urlParams.Get("user_id");
             App.NavigationService = new CustomNavigationService(NavigationService);

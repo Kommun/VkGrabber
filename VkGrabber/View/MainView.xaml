@@ -3,14 +3,37 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
       xmlns:local="clr-namespace:VkGrabber.View"
+      xmlns:converters="clr-namespace:VkGrabber.Utils.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300">
 
     <Page.Resources>
 
-        <Style TargetType="{x:Type TextBlock}" x:Key="WrapText">
-            <Setter Property="TextWrapping" Value="Wrap"/>
+        <converters:MultiBindingConverter x:Key="conv"/>
+
+        <Style TargetType="Button" x:Key="linkButton">
+            <Setter Property="Foreground" Value="SteelBlue"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="Foreground" Value="LightBlue"/>
+                                            <Setter Property="TextDecorations" Value="Underline"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                                <ContentPresenter />
+                        </TextBlock>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <DataTemplate x:Key="postTemplate">
@@ -53,7 +76,23 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Image Source="{Binding Photo.Photo_604}"
-                                       MaxWidth="150"/>
+                                       Width="{Binding Photo.Width}"
+                                       Height="{Binding Photo.Height}"
+                                       Tag="{Binding }"
+                                       Margin="2">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseUp">
+                                            <i:InvokeCommandAction Command="{Binding DataContext.ZoomCommand, RelativeSource={RelativeSource AncestorType=Page}}">
+                                                <i:InvokeCommandAction.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource conv}">
+                                                        <Binding/>
+                                                        <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                                                    </MultiBinding>
+                                                </i:InvokeCommandAction.CommandParameter>
+                                            </i:InvokeCommandAction>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Image>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
@@ -72,6 +111,22 @@
                         <TextBlock Text="{Binding Reposts.Count, StringFormat='❤ {0}'}"
                                    Foreground="SteelBlue"
                                    Margin="10,0,0,0"/>
+
+                        <Button Content="Запостить"
+                                Style="{StaticResource linkButton}"
+                                Command="{Binding DataContext.PostCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                CommandParameter="{Binding}"
+                                Margin="20,0,0,0"/>
+                        <Button Content="Добавить с заданной датой"
+                                Style="{StaticResource linkButton}"
+                                Command="{Binding DataContext.PostAtTimeCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                CommandParameter="{Binding}"
+                                Margin="20,0,0,0"/>
+                        <Button Content="Открыть оригинал"
+                                Style="{StaticResource linkButton}"
+                                Command="{Binding DataContext.OpenOriginalCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                CommandParameter="{Binding}"
+                                Margin="20,0,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -84,13 +139,15 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+
+        <!--Настройки-->
         <Expander Header="Настройки"
                   IsExpanded="{Binding IsSettingsExpanded}">
             <StackPanel>
                 <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
                           AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Название группы"
+                        <DataGridTextColumn Header="Название или Id группы"
                                             Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="Кол-во лайков"
                                             Binding="{Binding LikeCount}"/>
@@ -110,22 +167,35 @@
             </StackPanel>
         </Expander>
 
+        <!--Список постов-->
         <ScrollViewer Grid.Row="1">
             <ItemsControl ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
                   ItemTemplate="{StaticResource postTemplate}"
                   HorizontalContentAlignment="Stretch"
                   Background="LightGray">
-                <ItemsControl.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Запостить"
-                              Command="{Binding PostCommand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                        <MenuItem Header="Добавить с заданной датой"
-                              Command="{Binding PostAtTimeCommand}"
-                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
-                    </ContextMenu>
-                </ItemsControl.ContextMenu>
             </ItemsControl>
         </ScrollViewer>
+
+        <!--Увеличенное фото-->
+        <Grid Visibility="{Binding ZoomedPhotoVisibility}"
+              Grid.RowSpan="2">
+            <Grid Background="Black"
+                  Opacity="0.7">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseUp">
+                        <i:InvokeCommandAction Command="{Binding HideZoomedPhotoCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Grid>
+            <Image Source="{Binding ZoomedPhoto}"
+                   Margin="100">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseUp">
+                        <i:InvokeCommandAction Command="{Binding ZoomNextCommand}"
+                                               CommandParameter="{Binding}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Image>
+        </Grid>
     </Grid>
 </Page>

@@ -71,10 +71,10 @@ namespace VkGrabber.Utils
         /// <param name="group">Название группы</param>
         /// <param name="count">Количество постов</param>
         /// <returns></returns>
-        public ListResponse<Post> GetPosts(string group, int count, int offset)
+        public ListResponse<Post> GetPosts(long groupId, int count, int offset)
         {
             var request = new RestRequest("wall.get", Method.GET);
-            request.AddParameter("domain", group);
+            request.AddParameter("owner_id", $"-{groupId}");
             request.AddParameter("count", count);
             request.AddParameter("offset", offset);
             return Execute<ListResponse<Post>>(request);
@@ -88,45 +88,43 @@ namespace VkGrabber.Utils
         /// <param name="message">Текст</param>
         /// <param name="attachments">Прикрепленные документы</param>
         /// <returns></returns>
-        public object Post(string groupId, bool fromGroup, string message, List<Attachment> attachments, DateTimeOffset? publishDate = null)
+        public void Post(string groupId, bool fromGroup, string message, List<Attachment> attachments, DateTimeOffset? publishDate = null)
         {
             var request = new RestRequest("wall.post", Method.POST);
             request.AddParameter("owner_id", $"-{groupId}");
             request.AddParameter("from_group", fromGroup);
             request.AddParameter("message", message);
-            string attachmentsString = string.Join(",", attachments.Select(a => $"photo{a.Photo.Owner_Id}_{a.Photo.Id}"));
 
+            string attachmentsString = "";
             var client = new WebClient();
             // Получаем сервер для загрузки фото
             var uploadServer = GetWallUploadServer(groupId);
 
             foreach (var attach in attachments)
             {
+                string fileName = $"{attach.Photo.Id}.png";
 
-                try
-                {
-                    // Скачиваем фото из группы
-                    var photo = client.DownloadData(attach.Photo.Photo_604);
-                    // Загружаем фото на сервер
-                    //var client = new RestClient(b.Upload_Url);
-                    //var req = new RestRequest();
-                    //req.AddFile("", photo, attachments[0].Photo.Id.ToString());
-                    //var res = client.qExecute<UploadResult>(req);                    
-                    var res = client.UploadData(uploadServer.Upload_Url, photo);
-                    MessageBox.Show(res.Length.ToString());
-                    // Сохраняем фото на стене
-                    SaveWallPhoto(groupId, "", "", "");
-                }
-                catch (Exception ex) { MessageBox.Show(ex.InnerException.Message); }
+                // Скачиваем фото из группы
+                client.DownloadFile(attach.Photo.BiggestPhoto, fileName);
+
+                // Загружаем фото на сервер
+                var res = client.UploadFile(uploadServer.Upload_Url, fileName);
+                var uploadResult = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadResult>(Encoding.UTF8.GetString(res));
+
+                // Удаляем локальный файл
+                System.IO.File.Delete(fileName);
+
+                // Сохраняем фото на стене
+                var photo = SaveWallPhoto(groupId, uploadResult);
+                attachmentsString += $"photo{photo.Owner_Id}_{photo.Id},";
             }
-            return null;
 
             request.AddParameter("attachments", attachmentsString);
 
             if (publishDate != null)
                 request.AddParameter("publish_date", publishDate.Value.ToUnixTimeSeconds());
 
-            return Execute<object>(request);
+            Execute<object>(request);
         }
 
         /// <summary>
@@ -141,7 +139,20 @@ namespace VkGrabber.Utils
             return Execute<WallUploadServer>(request);
         }
 
-        public void SaveWallPhoto(string groupId, string photo, string server, string hash)
-        { }
+        /// <summary>
+        /// Сохранить фото в альбоме стены
+        /// </summary>
+        /// <param name="groupId">Id группы</param>
+        /// <param name="uploadResult">Результат загрузки фото на сервер</param>
+        /// <returns></returns>
+        public Photo SaveWallPhoto(string groupId, UploadResult uploadResult)
+        {
+            var request = new RestRequest("photos.saveWallPhoto", Method.POST);
+            request.AddParameter("group_id", groupId);
+            request.AddParameter("photo", uploadResult.Photo);
+            request.AddParameter("server", uploadResult.Server);
+            request.AddParameter("hash", uploadResult.Hash);
+            return Execute<List<Photo>>(request).SingleOrDefault();
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace VkGrabber.Model.Rest
 {
     public class UploadResult
     {
-        public string Server { get; set; }
+        public long Server { get; set; }
 
         public string Photo { get; set; }
 

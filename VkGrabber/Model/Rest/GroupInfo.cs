@@ -14,6 +14,16 @@ namespace VkGrabber.Model.Rest
         public long Id { get; set; }
 
         /// <summary>
+        /// Короткое название группы
+        /// </summary>
+        public string Screen_Name { get; set; }
+
+        /// <summary>
+        /// Тип сообщества
+        /// </summary>
+        public string Type { get; set; }
+
+        /// <summary>
         /// Название
         /// </summary>
         public string Name { get; set; }

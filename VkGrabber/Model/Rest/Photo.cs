@@ -19,13 +19,37 @@ namespace VkGrabber.Model.Rest
         public long Owner_Id { get; set; }
 
         /// <summary>
-        /// Фото с шириной 604
+        /// Ширина
         /// </summary>
-        public string Photo_604 { get; set; }
+        public double Width { get; set; }
 
         /// <summary>
-        /// Фото с шириной 1280
+        /// Высота
         /// </summary>
+        public double Height { get; set; }
+
+        #region Url фото в разных размерах
+
+        public string Photo_75 { get; set; }
+
+        public string Photo_130 { get; set; }
+
+        public string Photo_604 { get; set; }
+
+        public string Photo_807 { get; set; }
+
         public string Photo_1280 { get; set; }
+
+        public string Photo_2560 { get; set; }
+
+        /// <summary>
+        /// Самый большой доступный формат фото
+        /// </summary>
+        public string BiggestPhoto
+        {
+            get { return new string[] { Photo_2560, Photo_1280, Photo_807, Photo_604, Photo_130, Photo_75 }.First(p => !string.IsNullOrEmpty(p)); }
+        }
+
+        #endregion
     }
 }
