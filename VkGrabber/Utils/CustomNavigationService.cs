@@ -30,10 +30,30 @@ namespace VkGrabber.Utils
         /// Перейти на страницу
         /// </summary>
         /// <param name="page"></param>
-        public void Navigate(Page page)
+        public void Navigate(Page page, bool clearBackStack = false)
         {
             CurrentPage = page;
             _navigationService.Navigate(page);
+            if (clearBackStack)
+                ClearBackStack();
+        }
+
+        public void Navigate(string pageName)
+        {
+            _navigationService.Navigate(new Uri(pageName, UriKind.Relative));
+        }
+
+        /// <summary>
+        /// Очистить журнал переходов
+        /// </summary>
+        public void ClearBackStack()
+        {
+            JournalEntry entry;
+            do
+            {
+                entry = _navigationService.RemoveBackEntry();
+            }
+            while (entry != null);
         }
     }
 }

@@ -29,8 +29,8 @@ namespace VkGrabber.View
             //if (App.VkSettings.AccessToken != null)
             //    wbAuthorization.Navigate(string.Format("https://vk.com"));
             //        else
-           wbAuthorization.Navigate(string.Format("https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&display=page&response_type=token",
-                 VkSettings.AppId, VkSettings.Scopes, VkSettings.RedirectUri));
+            wbAuthorization.Navigate(string.Format("https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&display=page&response_type=token",
+                  VkSettings.AppId, VkSettings.Scopes, VkSettings.RedirectUri));
         }
 
         private void WbAuthorization_Navigated(object sender, NavigationEventArgs e)
@@ -41,8 +41,7 @@ namespace VkGrabber.View
             var urlParams = HttpUtility.ParseQueryString(e.Uri.Fragment.Substring(1));
             App.VkSettings.AccessToken = urlParams.Get("access_token");
             App.VkSettings.UserId = urlParams.Get("user_id");
-            App.NavigationService = new CustomNavigationService(NavigationService);
-            App.NavigationService.Navigate(new MainView());
+            NavigationService.Navigate(new RootView());
         }
     }
 }
