@@ -36,6 +36,21 @@
             </Setter>
         </Style>
 
+        <Style TargetType="Button" x:Key="customButton">
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="SteelBlue"/>
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   FontSize="17"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <DataTemplate x:Key="postTemplate">
             <Border BorderThickness="1"
                     BorderBrush="Gray"
@@ -150,19 +165,18 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Button Content="Получить список постов"
-                    Command="{Binding GrabCommand}"
-                    Width="{Binding PostWidth}"
-                    Margin="0,20"
-                    Padding="0,20"/>
                     <!--Список постов-->
-
                     <ItemsControl ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
                                   ItemTemplate="{StaticResource postTemplate}"
-                                  HorizontalContentAlignment="Stretch"
-                              Grid.Row="1">
+                                  HorizontalContentAlignment="Stretch">
                     </ItemsControl>
-
+                    <Button Content="Загрузить еще"
+                            Command="{Binding GrabCommand}"
+                            Style="{StaticResource customButton}"
+                            Width="{Binding PostWidth}"
+                            Margin="0,20"
+                            Padding="0,20"
+                            Grid.Row="1"/>
                 </Grid>
             </Grid>
         </ScrollViewer>

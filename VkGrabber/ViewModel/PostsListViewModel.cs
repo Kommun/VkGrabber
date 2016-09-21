@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Data;
@@ -93,7 +94,7 @@ namespace VkGrabber.ViewModel
         /// <summary>
         /// Отфильтованные по лайкам и репостам записи
         /// </summary>
-        public List<Post> FilteredPosts { get; set; }
+        public ObservableCollection<Post> FilteredPosts { get; set; } = new ObservableCollection<Post>();
 
         #endregion
 
@@ -109,13 +110,15 @@ namespace VkGrabber.ViewModel
             ZoomCommand = new CustomCommand(Zoom);
             ZoomNextCommand = new CustomCommand(ZoomNext);
             HideZoomedPhotoCommand = new CustomCommand(HideZoomedPhoto);
+
+            Grab();
         }
 
         /// <summary>
         /// Получить список постов
         /// </summary>
         /// <param name="parameter"></param>
-        private void Grab(object parameter)
+        private void Grab(object parameter = null)
         {
             List<Post> posts = new List<Post>();
             foreach (var group in App.VkSettings.Groups)
@@ -135,10 +138,9 @@ namespace VkGrabber.ViewModel
             {
                 if (p.Attachments?.Count > 0)
                     SetPhotoSize(p.Attachments.Select(a => a.Photo).ToList());
-            });
 
-            FilteredPosts = posts;
-            OnPropertyChanged("FilteredPosts");
+                FilteredPosts.Add(p);
+            });
         }
 
         /// <summary>
