@@ -6,26 +6,38 @@
       xmlns:local="clr-namespace:VkGrabber.View"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-      Title="RootView" ShowsNavigationUI="False">
+      ShowsNavigationUI="False">
 
     <Page.Resources>
-        <DataTemplate x:Key="menuItemTemplate">
-            <TextBlock Text="{Binding Name}"
-                       FontSize="25"
-                       Margin="10"/>
-        </DataTemplate>
+        <Style TargetType="TabItem">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   FontSize="20"
+                                   Margin="20,10"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Frame Content="{Binding}"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <ListView ItemsSource="{Binding MainMenuItems}"
-                  ItemTemplate="{StaticResource menuItemTemplate}"
-                  SelectedItem="{Binding SelectedPage, Mode=TwoWay}"/>
-        <Frame Grid.Column="1"
-               NavigationUIVisibility="Hidden"
-               Name="rootFrame"/>
-    </Grid>
+    <TabControl>
+        <TabItem Header="Настройки">
+            <local:SettingsView/>
+        </TabItem>
+        <TabItem Header="Посты">
+            <local:PostsListView/>
+        </TabItem>
+        <TabItem Header="Планировщик">
+            <local:SchedulerView/>
+        </TabItem>
+    </TabControl>
 </Page>

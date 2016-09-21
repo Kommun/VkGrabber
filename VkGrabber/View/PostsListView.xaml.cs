@@ -16,14 +16,19 @@ using System.Windows.Shapes;
 namespace VkGrabber.View
 {
     /// <summary>
-    /// Interaction logic for MainView.xaml
+    /// Interaction logic for PostsListView.xaml
     /// </summary>
-    public partial class MainView : Page
+    public partial class PostsListView : Page
     {
-        public MainView()
+        public PostsListView()
         {
             InitializeComponent();
-            DataContext = new ViewModel.MainViewModel();
+            DataContext = new ViewModel.PostsListViewModel();
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            sw.ScrollToTop();
         }
     }
 }

@@ -16,14 +16,14 @@ using System.Windows.Shapes;
 namespace VkGrabber.View
 {
     /// <summary>
-    /// Interaction logic for RootView.xaml
+    /// Interaction logic for SettingsView.xaml
     /// </summary>
-    public partial class RootView : Page
+    public partial class SettingsView : Page
     {
-        public RootView()
+        public SettingsView()
         {
             InitializeComponent();
-            DataContext = new ViewModel.RootViewModel();          
+            DataContext = new ViewModel.SettingsViewModel();
         }
     }
 }

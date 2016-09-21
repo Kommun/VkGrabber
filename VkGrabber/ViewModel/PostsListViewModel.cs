@@ -12,12 +12,11 @@ using VkGrabber.Model.Rest;
 
 namespace VkGrabber.ViewModel
 {
-    public class MainViewModel : PropertyChangedBase
+    public class PostsListViewModel : PropertyChangedBase
     {
         private Post _currentZoomedPost;
         private string _zoomedPhoto;
         private Visibility _zoomedPhotoVisibility = Visibility.Collapsed;
-        private bool _isSettingsExpanded = true;
 
         #region Commands
 
@@ -58,7 +57,12 @@ namespace VkGrabber.ViewModel
 
         #endregion
 
-        #region Properties        
+        #region Properties    
+
+        /// <summary>
+        /// Ширина поста
+        /// </summary>
+        public int PostWidth { get; } = 550;
 
         /// <summary>
         /// Url увеличенного фото
@@ -87,37 +91,16 @@ namespace VkGrabber.ViewModel
         }
 
         /// <summary>
-        /// Параметры
-        /// </summary>
-        public VkSettings VkSettings
-        {
-            get { return App.VkSettings; }
-        }
-
-        /// <summary>
         /// Отфильтованные по лайкам и репостам записи
         /// </summary>
         public List<Post> FilteredPosts { get; set; }
-
-        /// <summary>
-        /// Развернуты ли настройки
-        /// </summary>
-        public bool IsSettingsExpanded
-        {
-            get { return _isSettingsExpanded; }
-            set
-            {
-                _isSettingsExpanded = value;
-                OnPropertyChanged("IsSettingsExpanded");
-            }
-        }
 
         #endregion
 
         /// <summary>
         /// Конструктор
         /// </summary>
-        public MainViewModel()
+        public PostsListViewModel()
         {
             GrabCommand = new CustomCommand(Grab);
             PostCommand = new CustomCommand(Post);
@@ -134,9 +117,8 @@ namespace VkGrabber.ViewModel
         /// <param name="parameter"></param>
         private void Grab(object parameter)
         {
-            IsSettingsExpanded = false;
             List<Post> posts = new List<Post>();
-            foreach (var group in VkSettings.Groups)
+            foreach (var group in App.VkSettings.Groups)
             {
                 var groupInfo = App.VkApi.GetGroupsById(group.Name).SingleOrDefault();
                 var res = App.VkApi.GetPosts(groupInfo.Id, 100, group.Offset);
@@ -195,7 +177,7 @@ namespace VkGrabber.ViewModel
             });
 
             double summaryWidth = photo.Sum(i => i.Width);
-            double koef = summaryWidth / (500 - photo.Count * 4);
+            double koef = summaryWidth / (PostWidth - 50 - photo.Count * 4);
             photo.ForEach(i =>
             {
                 i.Width = (int)(i.Width / koef);
@@ -210,7 +192,7 @@ namespace VkGrabber.ViewModel
         private void Post(object parameter = null)
         {
             var post = parameter as Post;
-            App.VkApi.Post(VkSettings.TargetGroup, true, post.Text, post.Attachments);
+            App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments);
         }
 
         /// <summary>
@@ -231,7 +213,7 @@ namespace VkGrabber.ViewModel
                 return;
             }
 
-            App.VkApi.Post(VkSettings.TargetGroup, true, post.Text, post.Attachments, time);
+            App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments, time);
         }
 
         /// <summary>

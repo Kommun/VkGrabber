@@ -26,6 +26,7 @@ namespace VkGrabber.View
         {
             InitializeComponent();
             wbAuthorization.Navigated += WbAuthorization_Navigated;
+            // Для того, чтобы выйти из учетной записи при необходимости
             //if (App.VkSettings.AccessToken != null)
             //    wbAuthorization.Navigate(string.Format("https://vk.com"));
             //        else
