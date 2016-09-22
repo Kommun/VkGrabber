@@ -15,6 +15,7 @@
 
         <Style TargetType="Button" x:Key="linkButton">
             <Setter Property="Foreground" Value="SteelBlue"/>
+            <Setter Property="Margin" Value="20,0,0,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -127,21 +128,22 @@
                                    Foreground="SteelBlue"
                                    Margin="10,0,0,0"/>
 
-                        <Button Content="Запостить"
+                        <Button Content="Добавить"
                                 Style="{StaticResource linkButton}"
                                 Command="{Binding DataContext.PostCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                CommandParameter="{Binding}"
-                                Margin="20,0,0,0"/>
-                        <Button Content="Добавить с заданной датой"
+                                CommandParameter="{Binding}"/>
+                        <Button Content="Добавить по дате"
                                 Style="{StaticResource linkButton}"
                                 Command="{Binding DataContext.PostAtTimeCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                CommandParameter="{Binding}"
-                                Margin="20,0,0,0"/>
-                        <Button Content="Открыть оригинал"
+                                CommandParameter="{Binding}"/>
+                        <Button Content="В планировщик"
+                                Style="{StaticResource linkButton}"
+                                Command="{Binding DataContext.PostWithSchedulerCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                CommandParameter="{Binding}"/>
+                        <Button Content="Оригинал"
                                 Style="{StaticResource linkButton}"
                                 Command="{Binding DataContext.OpenOriginalCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                CommandParameter="{Binding}"
-                                Margin="20,0,0,0"/>
+                                CommandParameter="{Binding}"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -174,6 +176,7 @@
                             Command="{Binding GrabCommand}"
                             Style="{StaticResource customButton}"
                             Width="{Binding PostWidth}"
+                            VerticalAlignment="Top"
                             Margin="0,20"
                             Padding="0,20"
                             Grid.Row="1"/>

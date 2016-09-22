@@ -115,6 +115,9 @@
     <Compile Include="Controls\DateTimeDialog.xaml.cs">
       <DependentUpon>DateTimeDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TimePicker.xaml.cs">
+      <DependentUpon>TimePicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Enums\Scope.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\Rest\ApiError.cs" />
@@ -132,6 +135,7 @@
     <Compile Include="Utils\CustomCommand.cs" />
     <Compile Include="Utils\CustomNavigationService.cs" />
     <Compile Include="Utils\PropertyChangedBase.cs" />
+    <Compile Include="Utils\SchedulerSettings.cs" />
     <Compile Include="Utils\VkApi.cs" />
     <Compile Include="Utils\SettingsManager.cs" />
     <Compile Include="ViewModel\PostsListViewModel.cs" />
@@ -159,6 +163,10 @@
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\DateTimeDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TimePicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

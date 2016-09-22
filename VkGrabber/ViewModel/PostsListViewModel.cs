@@ -37,6 +37,11 @@ namespace VkGrabber.ViewModel
         public ICommand PostAtTimeCommand { get; set; }
 
         /// <summary>
+        /// Запостить с помощью планировщика
+        /// </summary>
+        public ICommand PostWithSchedulerCommand { get; set; }
+
+        /// <summary>
         /// Открыть оригинал
         /// </summary>
         public ICommand OpenOriginalCommand { get; set; }
@@ -106,6 +111,7 @@ namespace VkGrabber.ViewModel
             GrabCommand = new CustomCommand(Grab);
             PostCommand = new CustomCommand(Post);
             PostAtTimeCommand = new CustomCommand(PostAtTime);
+            PostWithSchedulerCommand = new CustomCommand(PostWithScheduler);
             OpenOriginalCommand = new CustomCommand(OpenOriginal);
             ZoomCommand = new CustomCommand(Zoom);
             ZoomNextCommand = new CustomCommand(ZoomNext);
@@ -216,6 +222,22 @@ namespace VkGrabber.ViewModel
             }
 
             App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments, time);
+        }
+
+        /// <summary>
+        /// Запостить с помощью планировщика
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void PostWithScheduler(object parameter)
+        {
+            if (App.VkSettings.SchedulerSettings.NextPostDate == null)
+            {
+                MessageBox.Show("Сначала настройте планировщик");
+                return;
+            }
+
+            var post = parameter as Post;
+            App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments, App.VkSettings.SchedulerSettings.NextPostDate);
         }
 
         /// <summary>

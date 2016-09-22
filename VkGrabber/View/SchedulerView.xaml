@@ -4,11 +4,38 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:VkGrabber.View"
+      xmlns:controls="clr-namespace:VkGrabber.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="SchedulerView">
 
-    <Grid>
-        
-    </Grid>
+    <StackPanel>
+        <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Top">
+            <TextBlock Text="Начало: "/>
+            <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+
+            <TextBlock Text="Конец: "
+                   Margin="30,0,0,0"/>
+            <controls:TimePicker Time="{Binding VkSettings.ToTime, Mode=TwoWay}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,20,0,0">
+            <TextBlock Text="Интервал: "/>
+            <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+
+            <TextBlock Text="Погрешность(+/-): "
+                   Margin="30,0,0,0"/>
+            <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+        </StackPanel>
+
+        <TextBlock Text="Дата добавления следующей записи: "
+                   Margin="0,20,0,0"/>
+        <StackPanel Orientation="Horizontal">
+            <DatePicker/>
+            <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+        </StackPanel>
+
+    </StackPanel>
 </Page>

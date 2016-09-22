@@ -33,5 +33,10 @@ namespace VkGrabber.Utils
         /// Название целевой группы
         /// </summary>
         public string TargetGroup { get; set; }
+
+        /// <summary>
+        /// Настройки планировщика
+        /// </summary>
+        public SchedulerSettings SchedulerSettings { get; set; } = new SchedulerSettings();
     }
 }
