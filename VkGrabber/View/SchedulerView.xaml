@@ -7,27 +7,27 @@
       xmlns:controls="clr-namespace:VkGrabber.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-      Title="SchedulerView">
+      Title="SchedulerView" Name="root">
 
     <StackPanel>
         <StackPanel Orientation="Horizontal"
                 VerticalAlignment="Top">
             <TextBlock Text="Начало: "/>
-            <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+            <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.FromTime, ElementName=root, Mode=TwoWay}"/>
 
             <TextBlock Text="Конец: "
                    Margin="30,0,0,0"/>
-            <controls:TimePicker Time="{Binding VkSettings.ToTime, Mode=TwoWay}"/>
+            <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.ToTime, ElementName=root, Mode=TwoWay}"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal"
                     Margin="0,20,0,0">
             <TextBlock Text="Интервал: "/>
-            <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+            <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.Interval, ElementName=root, Mode=TwoWay}"/>
 
             <TextBlock Text="Погрешность(+/-): "
                    Margin="30,0,0,0"/>
-            <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+            <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.Error, ElementName=root, Mode=TwoWay}"/>
         </StackPanel>
 
         <TextBlock Text="Дата добавления следующей записи: "

@@ -197,11 +197,17 @@
             <Image Source="{Binding ZoomedPhoto}"
                    Margin="100">
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseUp">
+                    <i:EventTrigger EventName="MouseLeftButtonUp">
                         <i:InvokeCommandAction Command="{Binding ZoomNextCommand}"
                                                CommandParameter="{Binding}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
+                <Image.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Копировать Url картинки"
+                                  Command="{Binding CopyUrlCommand}"/>
+                    </ContextMenu>
+                </Image.ContextMenu>
             </Image>
         </Grid>
     </Grid>

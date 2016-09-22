@@ -9,9 +9,11 @@
     <StackPanel Orientation="Horizontal">
         <ComboBox Name="cbHours"
                   ItemsSource="{Binding Hours}"
-                  SelectionChanged="ComboBox_SelectionChanged"/>
+                  SelectionChanged="ComboBox_SelectionChanged"
+                  SelectedIndex="0"/>
         <ComboBox Name="cbMinutes"
                   ItemsSource="{Binding Minutes}"
-                  SelectionChanged="ComboBox_SelectionChanged"/>
+                  SelectionChanged="ComboBox_SelectionChanged"
+                  SelectedIndex="0"/>
     </StackPanel>
 </UserControl>

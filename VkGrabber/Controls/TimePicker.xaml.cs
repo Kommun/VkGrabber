@@ -77,7 +77,7 @@ namespace VkGrabber.Controls
         /// <param name="e"></param>
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Time = new TimeSpan(cbHours.SelectedIndex, cbMinutes.SelectedIndex, 0);
+            Time = new TimeSpan((int?)cbHours.SelectedValue ?? 0, (int?)cbMinutes.SelectedValue ?? 0, 0);
         }
     }
 }

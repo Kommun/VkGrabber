@@ -31,7 +31,7 @@ namespace VkGrabber.Utils
         /// <summary>
         /// Время добавления следующего поста
         /// </summary>
-        public DateTime NextPostDate { get; set; }
+        public DateTime NextPostDate { get; set; } = new DateTime(2016, 9, 25, 9, 0, 0);
 
         /// <summary>
         /// Посчитать дату добавления следующего поста

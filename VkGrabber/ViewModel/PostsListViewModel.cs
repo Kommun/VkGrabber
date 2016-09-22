@@ -61,6 +61,8 @@ namespace VkGrabber.ViewModel
         /// </summary>
         public ICommand HideZoomedPhotoCommand { get; set; }
 
+        public ICommand CopyUrlCommand { get; set; }
+
         #endregion
 
         #region Properties    
@@ -116,6 +118,7 @@ namespace VkGrabber.ViewModel
             ZoomCommand = new CustomCommand(Zoom);
             ZoomNextCommand = new CustomCommand(ZoomNext);
             HideZoomedPhotoCommand = new CustomCommand(HideZoomedPhoto);
+            CopyUrlCommand = new CustomCommand(CopyUrl);
 
             Grab();
         }
@@ -238,6 +241,7 @@ namespace VkGrabber.ViewModel
 
             var post = parameter as Post;
             App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments, App.VkSettings.SchedulerSettings.NextPostDate);
+            App.VkSettings.SchedulerSettings.CalculateNextPostDate();
         }
 
         /// <summary>
@@ -304,6 +308,11 @@ namespace VkGrabber.ViewModel
         {
             ZoomedPhotoVisibility = Visibility.Collapsed;
             _currentZoomedPost = null;
+        }
+
+        private void CopyUrl(object parameter)
+        {
+            Clipboard.SetText(ZoomedPhoto);
         }
     }
 }
