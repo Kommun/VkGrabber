@@ -16,15 +16,13 @@ namespace VkGrabber.ViewModel
     public class PostsListViewModel : PropertyChangedBase
     {
         private Post _currentZoomedPost;
-        private string _zoomedPhoto;
-        private Visibility _zoomedPhotoVisibility = Visibility.Collapsed;
 
         #region Commands
 
         /// <summary>
         /// Получить список постов
         /// </summary>
-        public ICommand GrabCommand { get; set; }
+        public ICommand GrabNextCommand { get; set; }
 
         /// <summary>
         /// Запостить
@@ -61,7 +59,15 @@ namespace VkGrabber.ViewModel
         /// </summary>
         public ICommand HideZoomedPhotoCommand { get; set; }
 
-        public ICommand CopyUrlCommand { get; set; }
+        /// <summary>
+        /// Поиск по картинке
+        /// </summary>
+        public ICommand FindImageCommand { get; set; }
+
+        /// <summary>
+        /// Очистить список
+        /// </summary>
+        public ICommand ClearListCommand { get; set; }
 
         #endregion
 
@@ -72,6 +78,7 @@ namespace VkGrabber.ViewModel
         /// </summary>
         public int PostWidth { get; } = 550;
 
+        private string _zoomedPhoto;
         /// <summary>
         /// Url увеличенного фото
         /// </summary>
@@ -85,6 +92,7 @@ namespace VkGrabber.ViewModel
             }
         }
 
+        private Visibility _zoomedPhotoVisibility = Visibility.Collapsed;
         /// <summary>
         /// Видимость увеличенного фото
         /// </summary>
@@ -95,6 +103,20 @@ namespace VkGrabber.ViewModel
             {
                 _zoomedPhotoVisibility = value;
                 OnPropertyChanged("ZoomedPhotoVisibility");
+            }
+        }
+
+        private Visibility _loadingIndicatorVisibility = Visibility.Collapsed;
+        /// <summary>
+        /// Видимость индикатора загрузки
+        /// </summary>
+        public Visibility LoadingIndicatorVisibility
+        {
+            get { return _loadingIndicatorVisibility; }
+            set
+            {
+                _loadingIndicatorVisibility = value;
+                OnPropertyChanged("LoadingIndicatorVisibility");
             }
         }
 
@@ -110,7 +132,7 @@ namespace VkGrabber.ViewModel
         /// </summary>
         public PostsListViewModel()
         {
-            GrabCommand = new CustomCommand(Grab);
+            GrabNextCommand = new CustomCommand(GrabNext);
             PostCommand = new CustomCommand(Post);
             PostAtTimeCommand = new CustomCommand(PostAtTime);
             PostWithSchedulerCommand = new CustomCommand(PostWithScheduler);
@@ -118,22 +140,28 @@ namespace VkGrabber.ViewModel
             ZoomCommand = new CustomCommand(Zoom);
             ZoomNextCommand = new CustomCommand(ZoomNext);
             HideZoomedPhotoCommand = new CustomCommand(HideZoomedPhoto);
-            CopyUrlCommand = new CustomCommand(CopyUrl);
+            FindImageCommand = new CustomCommand(FindImage);
+            ClearListCommand = new CustomCommand(ClearList);
 
             Grab();
         }
 
+        #region Methods
+
         /// <summary>
         /// Получить список постов
         /// </summary>
-        /// <param name="parameter"></param>
-        private void Grab(object parameter = null)
+        private void Grab()
         {
             List<Post> posts = new List<Post>();
             foreach (var group in App.VkSettings.Groups)
             {
                 var groupInfo = App.VkApi.GetGroupsById(group.Name).SingleOrDefault();
                 var res = App.VkApi.GetPosts(groupInfo.Id, 100, group.Offset);
+
+                if (res.Items.Count == 0)
+                    MessageBox.Show($"В группе {group.Name} закончились посты");
+
                 res.Items.ForEach(p => p.GroupInfo = groupInfo);
 
                 // Отбираем посты, к которым ничего не прикреплено или прикреплены только фото, а также фильтруем по количеству лайков и репостов
@@ -197,62 +225,22 @@ namespace VkGrabber.ViewModel
         }
 
         /// <summary>
-        /// Запостить
+        /// Добавить пост
         /// </summary>
-        /// <param name="parameter"></param>
-        private void Post(object parameter = null)
+        /// <param name="post"></param>
+        /// <returns></returns>
+        private async Task Post(Post post, DateTimeOffset? date = null)
         {
-            var post = parameter as Post;
-            App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments);
-        }
+            LoadingIndicatorVisibility = Visibility.Visible;
+            await Task.Delay(100);
 
-        /// <summary>
-        /// Запостить в определенное время
-        /// </summary>
-        /// <param name="parameter"></param>
-        private void PostAtTime(object parameter = null)
-        {
-            var post = parameter as Post;
-            var time = new Controls.DateTimeDialog().ShowModal();
+            var groupInfo = App.VkApi.GetGroupsById(App.VkSettings.TargetGroup).FirstOrDefault();
+            if (groupInfo == null)
+                MessageBox.Show("Целевая группа задана неверно");
+            else
+                App.VkApi.Post(groupInfo.Id.ToString(), true, post.Text, post.Attachments, date);
 
-            if (time == null)
-                return;
-
-            if (time < DateTime.Now.AddMinutes(1))
-            {
-                MessageBox.Show("Невозможно добавить пост с прошедшей датой");
-                return;
-            }
-
-            App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments, time);
-        }
-
-        /// <summary>
-        /// Запостить с помощью планировщика
-        /// </summary>
-        /// <param name="parameter"></param>
-        private void PostWithScheduler(object parameter)
-        {
-            if (App.VkSettings.SchedulerSettings.NextPostDate == null)
-            {
-                MessageBox.Show("Сначала настройте планировщик");
-                return;
-            }
-
-            var post = parameter as Post;
-            App.VkApi.Post(App.VkSettings.TargetGroup, true, post.Text, post.Attachments, App.VkSettings.SchedulerSettings.NextPostDate);
-            App.VkSettings.SchedulerSettings.CalculateNextPostDate();
-        }
-
-        /// <summary>
-        /// Открыть оригинал
-        /// </summary>
-        /// <param name="parameter"></param>
-        private void OpenOriginal(object parameter = null)
-        {
-            var post = parameter as Post;
-            var url = string.Format("https://vk.com/{0}{1}?w=wall-{1}_{2}", GetGroupTypeUrl(post.GroupInfo), post.GroupInfo.Id, post.Id);
-            Process.Start(new ProcessStartInfo(url));
+            LoadingIndicatorVisibility = Visibility.Collapsed;
         }
 
         /// <summary>
@@ -273,6 +261,76 @@ namespace VkGrabber.ViewModel
                 default:
                     return "";
             }
+        }
+
+        #endregion
+
+        #region CommandMethods
+
+        /// <summary>
+        /// Получить следующие записи
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void GrabNext(object parameter)
+        {
+            App.VkSettings.Groups.ForEach(g => g.Offset += 100);
+            Grab();
+        }
+
+        /// <summary>
+        /// Запостить
+        /// </summary>
+        /// <param name="parameter"></param>
+        private async void Post(object parameter = null)
+        {
+            await Post(parameter as Post);
+        }
+
+        /// <summary>
+        /// Запостить в определенное время
+        /// </summary>
+        /// <param name="parameter"></param>
+        private async void PostAtTime(object parameter = null)
+        {
+            var time = new Controls.DateTimeDialog().ShowModal();
+
+            if (time == null)
+                return;
+
+            if (time < DateTime.Now.AddMinutes(1))
+            {
+                MessageBox.Show("Невозможно добавить пост с прошедшей датой");
+                return;
+            }
+
+            await Post(parameter as Post, time);
+        }
+
+        /// <summary>
+        /// Запостить с помощью планировщика
+        /// </summary>
+        /// <param name="parameter"></param>
+        private async void PostWithScheduler(object parameter)
+        {
+            if (App.VkSettings.SchedulerSettings.NextPostDate == null)
+            {
+                MessageBox.Show("Сначала настройте планировщик");
+                return;
+            }
+
+            await Post(parameter as Post, App.VkSettings.SchedulerSettings.NextPostDate);
+            App.VkSettings.SchedulerSettings.CalculateNextPostDate();
+        }
+
+        /// <summary>
+        /// Открыть оригинал
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void OpenOriginal(object parameter = null)
+        {
+            var post = parameter as Post;
+            var url = string.Format("https://vk.com/{0}{1}?w=wall-{1}_{2}", GetGroupTypeUrl(post.GroupInfo), post.GroupInfo.Id, post.Id);
+            Process.Start(new ProcessStartInfo(url));
         }
 
         /// <summary>
@@ -310,9 +368,25 @@ namespace VkGrabber.ViewModel
             _currentZoomedPost = null;
         }
 
-        private void CopyUrl(object parameter)
+        /// <summary>
+        /// Поиск по картинке
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void FindImage(object parameter)
         {
-            Clipboard.SetText(ZoomedPhoto);
+            var url = string.Format("https://www.google.com/searchbyimage?&image_url={0}", ZoomedPhoto);
+            Process.Start(new ProcessStartInfo(url));
         }
+
+        /// <summary>
+        /// Очистить список
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void ClearList(object parameter)
+        {
+            FilteredPosts.Clear();
+        }
+
+        #endregion CommandMethods
     }
 }

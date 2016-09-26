@@ -4,29 +4,87 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:VkGrabber.View"
+      xmlns:controls="clr-namespace:VkGrabber.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-      Title="SettingsView">
+      Title="SettingsView"
+      Background="LightGray">
+
+    <Page.Resources>
+
+        <Style TargetType="TextBlock" x:Key="headerStyle">
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+
+    </Page.Resources>
 
     <StackPanel>
-
-        <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
+        <Grid Width="550"
+          Background="White"
+          Margin="0,10">
+            <StackPanel Margin="20">
+                <TextBlock Text="Основные настройки"
+                               Style="{StaticResource headerStyle}"/>
+                <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
                   AutoGenerateColumns="False">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Название или Id группы"
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Название или Id группы"
                                     Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Кол-во лайков"
+                        <DataGridTextColumn Header="Кол-во лайков"
                                     Binding="{Binding LikeCount}"/>
-                <DataGridTextColumn Header="Кол-во репостов"
+                        <DataGridTextColumn Header="Кол-во репостов"
                                     Binding="{Binding RepostCount}"/>
-                <DataGridTextColumn Header="Сдвиг"
+                        <DataGridTextColumn Header="Сдвиг"
                                     Binding="{Binding Offset}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                    </DataGrid.Columns>
+                </DataGrid>
 
-        <TextBlock Text="Название или Id целевой группы (куда будут добавляться посты)"
+                <TextBlock Text="Название или Id целевой группы (куда будут добавляться посты)"
                    Margin="0,20,0,0"/>
-        <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
+                <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
 
+                <Button Content="Обновить список записей"
+                            Command="{Binding RefreshPostsCommand}"
+                            Margin="0,20,0,0"
+                            Padding="0,10"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Width="550"
+          Background="White"
+          Margin="0,10">
+            <StackPanel Margin="20">
+                <TextBlock Text="Планировщик"
+                               Style="{StaticResource headerStyle}"/>
+                <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Top">
+                    <TextBlock Text="Начало: "/>
+                    <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.FromTime, ElementName=root, Mode=TwoWay}"/>
+
+                    <TextBlock Text="Конец: "
+                   Margin="30,0,0,0"/>
+                    <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.ToTime, ElementName=root, Mode=TwoWay}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                    Margin="0,20,0,0">
+                    <TextBlock Text="Интервал: "/>
+                    <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.Interval, ElementName=root, Mode=TwoWay}"/>
+
+                    <TextBlock Text="Погрешность(+/-): "
+                   Margin="30,0,0,0"/>
+                    <controls:TimePicker Time="{Binding DataContext.VkSettings.SchedulerSettings.Error, ElementName=root, Mode=TwoWay}"/>
+                </StackPanel>
+
+                <TextBlock Text="Дата добавления следующей записи: "
+                   Margin="0,20,0,0"/>
+                <StackPanel Orientation="Horizontal">
+                    <DatePicker/>
+                    <controls:TimePicker Time="{Binding VkSettings.FromTime, Mode=TwoWay}"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
     </StackPanel>
 </Page>

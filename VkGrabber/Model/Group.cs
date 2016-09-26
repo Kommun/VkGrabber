@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VkGrabber.Utils;
 
 namespace VkGrabber.Model
 {
-    public class Group
+    public class Group : PropertyChangedBase
     {
         /// <summary>
         /// Название группы
@@ -23,9 +24,18 @@ namespace VkGrabber.Model
         /// </summary>
         public int RepostCount { get; set; }
 
+        private int _offset;
         /// <summary>
         /// Сдвиг
         /// </summary>
-        public int Offset { get; set; }
+        public int Offset
+        {
+            get { return _offset; }
+            set
+            {
+                _offset = value;
+                OnPropertyChanged("Offset");
+            }
+        }
     }
 }

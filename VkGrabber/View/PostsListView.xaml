@@ -6,6 +6,7 @@
       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
       xmlns:local="clr-namespace:VkGrabber.View"
       xmlns:converters="clr-namespace:VkGrabber.Utils.Converters"
+      xmlns:controls="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300">
 
@@ -42,6 +43,8 @@
             <Setter Property="BorderBrush" Value="Gray"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="SteelBlue"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Padding" Value="0,10"/>
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -172,14 +175,24 @@
                                   ItemTemplate="{StaticResource postTemplate}"
                                   HorizontalContentAlignment="Stretch">
                     </ItemsControl>
-                    <Button Content="Загрузить еще"
-                            Command="{Binding GrabCommand}"
-                            Style="{StaticResource customButton}"
-                            Width="{Binding PostWidth}"
-                            VerticalAlignment="Top"
-                            Margin="0,20"
-                            Padding="0,20"
-                            Grid.Row="1"/>
+
+                    <!--Кнопки "Очистить" и "Загрузить еще" под списком постов-->
+                    <Grid Grid.Row="1" 
+                          Width="{Binding PostWidth}"
+                          Margin="0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Очистить список"
+                                Command="{Binding ClearListCommand}"
+                                Style="{StaticResource customButton}"/>
+                        <Button Content="Загрузить еще"
+                                Command="{Binding GrabNextCommand}"
+                                Style="{StaticResource customButton}"
+                                Grid.Column="2"/>
+                    </Grid>
                 </Grid>
             </Grid>
         </ScrollViewer>
@@ -194,21 +207,37 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Grid>
-            <Image Source="{Binding ZoomedPhoto}"
-                   Margin="100">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseLeftButtonUp">
-                        <i:InvokeCommandAction Command="{Binding ZoomNextCommand}"
+            <Grid Margin="100">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Image Source="{Binding ZoomedPhoto}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseLeftButtonUp">
+                            <i:InvokeCommandAction Command="{Binding ZoomNextCommand}"
                                                CommandParameter="{Binding}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-                <Image.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Копировать Url картинки"
-                                  Command="{Binding CopyUrlCommand}"/>
-                    </ContextMenu>
-                </Image.ContextMenu>
-            </Image>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Image>
+                <Button Content="Найти картинку"
+                        Background="White"
+                        Style="{StaticResource linkButton}"
+                        Command="{Binding CopyUrlCommand}"
+                        HorizontalAlignment="Center"
+                        Grid.Row="1"/>
+            </Grid>
+        </Grid>
+
+        <!--Индикатор загрузки-->
+        <Grid Visibility="{Binding LoadingIndicatorVisibility}">
+            <Grid Background="Black"
+                  Opacity="0.7"/>
+            <TextBlock Text="Запись добавляется..."
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="White"
+                       FontSize="30"/>
         </Grid>
     </Grid>
 </Page>
