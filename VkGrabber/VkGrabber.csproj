@@ -115,11 +115,16 @@
     <Compile Include="Controls\DateTimeDialog.xaml.cs">
       <DependentUpon>DateTimeDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\DateTimePicker.xaml.cs">
+      <DependentUpon>DateTimePicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SettingsSection.cs" />
     <Compile Include="Controls\TimePicker.xaml.cs">
       <DependentUpon>TimePicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Enums\Scope.cs" />
     <Compile Include="Model\Group.cs" />
+    <Compile Include="Model\Messenger\GrabMessage.cs" />
     <Compile Include="Model\Rest\ApiError.cs" />
     <Compile Include="Model\Rest\Attachment.cs" />
     <Compile Include="Model\Rest\GroupInfo.cs" />
@@ -134,6 +139,7 @@
     <Compile Include="Utils\Converters\MultiBindingConverter.cs" />
     <Compile Include="Utils\CustomCommand.cs" />
     <Compile Include="Utils\CustomNavigationService.cs" />
+    <Compile Include="Utils\Messenger.cs" />
     <Compile Include="Utils\PropertyChangedBase.cs" />
     <Compile Include="Utils\SchedulerSettings.cs" />
     <Compile Include="Utils\VkApi.cs" />
@@ -162,9 +168,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\DateTimePicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\TimePicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\AuthorizationView.xaml">
       <SubType>Designer</SubType>

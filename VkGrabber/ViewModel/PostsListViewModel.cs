@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Diagnostics;
 using VkGrabber.Utils;
 using VkGrabber.Model.Rest;
+using VkGrabber.Model.Messenger;
 
 namespace VkGrabber.ViewModel
 {
@@ -143,6 +144,12 @@ namespace VkGrabber.ViewModel
             FindImageCommand = new CustomCommand(FindImage);
             ClearListCommand = new CustomCommand(ClearList);
 
+            Messenger.Default.Register(this, (GrabMessage o) =>
+            {
+                ClearList();
+                Grab();
+            });
+
             Grab();
         }
 
@@ -232,13 +239,15 @@ namespace VkGrabber.ViewModel
         private async Task Post(Post post, DateTimeOffset? date = null)
         {
             LoadingIndicatorVisibility = Visibility.Visible;
-            await Task.Delay(100);
 
-            var groupInfo = App.VkApi.GetGroupsById(App.VkSettings.TargetGroup).FirstOrDefault();
-            if (groupInfo == null)
-                MessageBox.Show("Целевая группа задана неверно");
-            else
-                App.VkApi.Post(groupInfo.Id.ToString(), true, post.Text, post.Attachments, date);
+            await Task.Run(() =>
+            {
+                var groupInfo = App.VkApi.GetGroupsById(App.VkSettings.TargetGroup).FirstOrDefault();
+                if (groupInfo == null)
+                    MessageBox.Show("Целевая группа задана неверно");
+                else
+                    App.VkApi.Post(groupInfo.Id.ToString(), true, post.Text, post.Attachments, date);
+            });
 
             LoadingIndicatorVisibility = Visibility.Collapsed;
         }
@@ -382,7 +391,7 @@ namespace VkGrabber.ViewModel
         /// Очистить список
         /// </summary>
         /// <param name="parameter"></param>
-        private void ClearList(object parameter)
+        private void ClearList(object parameter = null)
         {
             FilteredPosts.Clear();
         }

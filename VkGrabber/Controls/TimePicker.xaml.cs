@@ -20,6 +20,8 @@ namespace VkGrabber.Controls
     /// </summary>
     public partial class TimePicker : UserControl
     {
+        public event EventHandler TimeChanged;
+
         #region TimeProperty        
 
         /// <summary>
@@ -46,28 +48,13 @@ namespace VkGrabber.Controls
         #endregion
 
         /// <summary>
-        /// Часы
-        /// </summary>
-        public IEnumerable<int> Hours
-        {
-            get { return Enumerable.Range(0, 24); }
-        }
-
-        /// <summary>
-        /// Минуты
-        /// </summary>
-        public IEnumerable<int> Minutes
-        {
-            get { return Enumerable.Range(0, 60); }
-        }
-
-        /// <summary>
         /// Конструктор
         /// </summary>
         public TimePicker()
         {
             InitializeComponent();
-            DataContext = this;
+            cbHours.ItemsSource = Enumerable.Range(0, 24);
+            cbMinutes.ItemsSource = Enumerable.Range(0, 60);
         }
 
         /// <summary>
@@ -78,6 +65,7 @@ namespace VkGrabber.Controls
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Time = new TimeSpan((int?)cbHours.SelectedValue ?? 0, (int?)cbMinutes.SelectedValue ?? 0, 0);
+            TimeChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

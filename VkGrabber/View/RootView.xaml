@@ -36,8 +36,5 @@
         <TabItem Header="Посты">
             <local:PostsListView/>
         </TabItem>
-        <TabItem Header="Планировщик">
-            <local:SchedulerView/>
-        </TabItem>
     </TabControl>
 </Page>

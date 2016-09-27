@@ -31,7 +31,7 @@ namespace VkGrabber.Utils
         /// <summary>
         /// Время добавления следующего поста
         /// </summary>
-        public DateTime NextPostDate { get; set; } = new DateTime(2016, 9, 25, 9, 0, 0);
+        public DateTime NextPostDate { get; set; } = new DateTime(2016, 9, 28, 9, 0, 0);
 
         /// <summary>
         /// Посчитать дату добавления следующего поста
@@ -47,6 +47,8 @@ namespace VkGrabber.Utils
                 NextPostDate = NextPostDate.Date.AddDays(1).Add(FromTime).AddMinutes(error);
             else
                 NextPostDate = NextPostDate.Add(Interval).AddMinutes(error);
+
+            System.Windows.MessageBox.Show(NextPostDate.ToString());
         }
     }
 }

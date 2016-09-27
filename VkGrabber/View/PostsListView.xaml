@@ -223,21 +223,33 @@
                 <Button Content="Найти картинку"
                         Background="White"
                         Style="{StaticResource linkButton}"
-                        Command="{Binding CopyUrlCommand}"
+                        Command="{Binding FindImageCommand}"
                         HorizontalAlignment="Center"
                         Grid.Row="1"/>
             </Grid>
         </Grid>
 
-        <!--Индикатор загрузки-->
-        <Grid Visibility="{Binding LoadingIndicatorVisibility}">
-            <Grid Background="Black"
-                  Opacity="0.7"/>
-            <TextBlock Text="Запись добавляется..."
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Foreground="White"
-                       FontSize="30"/>
+        <!--Имитируем нижний грид для точного позиционирования по горизонтали-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="{Binding PostWidth}"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!--Индикатор загрузки-->
+            <StackPanel Visibility="{Binding LoadingIndicatorVisibility}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Grid.Column="2">
+                <TextBlock Text="Пост загружается..."
+                           FontSize="15"
+                           HorizontalAlignment="Center"/>
+                <ProgressBar IsIndeterminate="True"
+                             Height="10"
+                             Margin="0,10"/>
+            </StackPanel>
         </Grid>
+
     </Grid>
 </Page>
