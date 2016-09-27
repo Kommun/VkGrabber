@@ -27,13 +27,13 @@ namespace VkGrabber.Controls
         /// <summary>
         /// Время
         /// </summary>
-        public TimeSpan Time
+        public TimeSpan? Time
         {
-            get { return (TimeSpan)GetValue(TimeProperty); }
+            get { return (TimeSpan?)GetValue(TimeProperty); }
             set { SetValue(TimeProperty, value); }
         }
 
-        public static readonly DependencyProperty TimeProperty = DependencyProperty.Register("Time", typeof(TimeSpan), typeof(TimePicker), new PropertyMetadata(new PropertyChangedCallback(OnTimeChanged)));
+        public static readonly DependencyProperty TimeProperty = DependencyProperty.Register("Time", typeof(TimeSpan?), typeof(TimePicker), new PropertyMetadata(new PropertyChangedCallback(OnTimeChanged)));
 
         private static void OnTimeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
@@ -41,6 +41,8 @@ namespace VkGrabber.Controls
                 return;
 
             var timePicker = sender as TimePicker;
+
+            timePicker.TimeChanged?.Invoke(timePicker, EventArgs.Empty);
             timePicker.cbHours.SelectedIndex = ((TimeSpan)e.NewValue).Hours;
             timePicker.cbMinutes.SelectedIndex = ((TimeSpan)e.NewValue).Minutes;
         }
@@ -65,7 +67,6 @@ namespace VkGrabber.Controls
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Time = new TimeSpan((int?)cbHours.SelectedValue ?? 0, (int?)cbMinutes.SelectedValue ?? 0, 0);
-            TimeChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

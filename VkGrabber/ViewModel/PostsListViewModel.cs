@@ -321,14 +321,19 @@ namespace VkGrabber.ViewModel
         /// <param name="parameter"></param>
         private async void PostWithScheduler(object parameter)
         {
-            if (App.VkSettings.SchedulerSettings.NextPostDate == null)
+            if (App.VkSettings.SchedulerSettings.FromTime == null || App.VkSettings.SchedulerSettings.ToTime == null)
+                MessageBox.Show("Задайте временные рамки планировщика");
+            else if (App.VkSettings.SchedulerSettings.Interval == null)
+                MessageBox.Show("Задайте интервал планировщика");
+            else if (App.VkSettings.SchedulerSettings.NextPostDate == null)
+                MessageBox.Show("Задайте дату следующего поста");
+            else if (App.VkSettings.SchedulerSettings.NextPostDate < DateTime.Now.AddMinutes(1))
+                MessageBox.Show("Дата следующего поста должна быть больше текущей");
+            else
             {
-                MessageBox.Show("Сначала настройте планировщик");
-                return;
+                await Post(parameter as Post, App.VkSettings.SchedulerSettings.NextPostDate);
+                App.VkSettings.SchedulerSettings.CalculateNextPostDate();
             }
-
-            await Post(parameter as Post, App.VkSettings.SchedulerSettings.NextPostDate);
-            App.VkSettings.SchedulerSettings.CalculateNextPostDate();
         }
 
         /// <summary>

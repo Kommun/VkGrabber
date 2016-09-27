@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using RestSharp;
 using VkGrabber.Model.Rest;
@@ -100,9 +101,13 @@ namespace VkGrabber.Utils
             // Получаем сервер для загрузки фото
             var uploadServer = GetWallUploadServer(groupId);
 
+            string directoryName = "PostImages";
+            if (!Directory.Exists(directoryName))
+                Directory.CreateDirectory(directoryName);
+
             foreach (var attach in attachments)
             {
-                string fileName = $"{attach.Photo.Id}.png";
+                string fileName = $"{directoryName}\\{attach.Photo.Id}.png";
 
                 // Скачиваем фото из группы
                 client.DownloadFile(attach.Photo.BiggestPhoto, fileName);

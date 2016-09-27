@@ -6,32 +6,41 @@ using System.Threading.Tasks;
 
 namespace VkGrabber.Utils
 {
-    public class SchedulerSettings
+    public class SchedulerSettings : PropertyChangedBase
     {
         /// <summary>
         /// Начальное время добавления постов
         /// </summary>
-        public TimeSpan FromTime { get; set; }
+        public TimeSpan? FromTime { get; set; }
 
         /// <summary>
         /// Конечное время добавления постов
         /// </summary>
-        public TimeSpan ToTime { get; set; }
+        public TimeSpan? ToTime { get; set; }
 
         /// <summary>
         /// Интервал между постами
         /// </summary>
-        public TimeSpan Interval { get; set; }
+        public TimeSpan? Interval { get; set; }
 
         /// <summary>
         /// Погрещность
         /// </summary>
-        public TimeSpan Error { get; set; }
+        public TimeSpan? Error { get; set; }
 
+        private DateTime? _nextPostDate;
         /// <summary>
         /// Время добавления следующего поста
         /// </summary>
-        public DateTime NextPostDate { get; set; } = new DateTime(2016, 9, 28, 9, 0, 0);
+        public DateTime? NextPostDate
+        {
+            get { return _nextPostDate; }
+            set
+            {
+                _nextPostDate = value;
+                OnPropertyChanged("NextPostDate");
+            }
+        }
 
         /// <summary>
         /// Посчитать дату добавления следующего поста
@@ -39,16 +48,13 @@ namespace VkGrabber.Utils
         public void CalculateNextPostDate()
         {
             // Вычисляем погрешность в минутах
-            var errorMinutes = Error.Hours * 60 + Error.Minutes;
-            var error = new Random().Next(-errorMinutes, errorMinutes);
+            var error = Error == null ? 0 : (new Random().Next(-(int)Error?.TotalMinutes, (int)Error?.TotalMinutes));
 
             // Высчитываем время добавления следующего поста
-            if (NextPostDate.TimeOfDay.Add(Interval) > ToTime)
-                NextPostDate = NextPostDate.Date.AddDays(1).Add(FromTime).AddMinutes(error);
+            if (NextPostDate?.TimeOfDay.Add(Interval.Value) > ToTime)
+                NextPostDate = NextPostDate?.Date.AddDays(1).Add(FromTime.Value).AddMinutes(error);
             else
-                NextPostDate = NextPostDate.Add(Interval).AddMinutes(error);
-
-            System.Windows.MessageBox.Show(NextPostDate.ToString());
+                NextPostDate = NextPostDate?.Add(Interval.Value).AddMinutes(error);
         }
     }
 }

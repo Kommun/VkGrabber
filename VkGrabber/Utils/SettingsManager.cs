@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace VkGrabber.Utils
 {
@@ -24,10 +20,10 @@ namespace VkGrabber.Utils
             try
             {
                 XmlDocument xmlDocument = new XmlDocument();
-                XmlSerializer serializer = new XmlSerializer(serializableObject.GetType());
+                DataContractSerializer serializer = new DataContractSerializer(serializableObject.GetType());
                 using (MemoryStream stream = new MemoryStream())
                 {
-                    serializer.Serialize(stream, serializableObject);
+                    serializer.WriteObject(stream, serializableObject);
                     stream.Position = 0;
                     xmlDocument.Load(stream);
                     xmlDocument.Save(fileName);
@@ -63,10 +59,10 @@ namespace VkGrabber.Utils
                 {
                     Type outType = typeof(T);
 
-                    XmlSerializer serializer = new XmlSerializer(outType);
+                    DataContractSerializer serializer = new DataContractSerializer(outType);
                     using (XmlReader reader = new XmlTextReader(read))
                     {
-                        objectOut = (T)serializer.Deserialize(reader);
+                        objectOut = (T)serializer.ReadObject(reader);
                         reader.Close();
                     }
 

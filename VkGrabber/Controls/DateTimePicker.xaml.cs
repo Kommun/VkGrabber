@@ -25,21 +25,22 @@ namespace VkGrabber.Controls
         /// <summary>
         /// Дата (со временем)
         /// </summary>
-        public DateTime DateTime
+        public DateTime? DateTime
         {
-            get { return (DateTime)GetValue(DateTimeProperty); }
+            get { return (DateTime?)GetValue(DateTimeProperty); }
             set { SetValue(DateTimeProperty, value); }
         }
 
-        public static readonly DependencyProperty DateTimeProperty = DependencyProperty.Register("DateTime", typeof(DateTime), typeof(DateTimePicker), new PropertyMetadata(new PropertyChangedCallback(OnDateTimeChanged)));
+        public static readonly DependencyProperty DateTimeProperty = DependencyProperty.Register("DateTime", typeof(DateTime?), typeof(DateTimePicker), new PropertyMetadata(new PropertyChangedCallback(OnDateTimeChanged)));
 
         private static void OnDateTimeChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue == null)
                 return;
 
-            var timePicker = sender as DateTimePicker;
-
+            var dateTimePicker = sender as DateTimePicker;
+            dateTimePicker.tPicker.Time = ((DateTime)e.NewValue).TimeOfDay;
+            dateTimePicker.dPicker.SelectedDate = ((DateTime)e.NewValue).Date;
         }
 
         #endregion
@@ -61,9 +62,14 @@ namespace VkGrabber.Controls
 
         private void RefreshDateTime()
         {
-            var date = dPicker.SelectedDate.Value;
+            var date = dPicker.SelectedDate;
             var time = tPicker.Time;
-            DateTime = new DateTime(date.Year, date.Month, date.Day, time.Hours, time.Minutes, time.Seconds);
+
+            if (date == null || time == null)
+                DateTime = null;
+            else
+                DateTime = new DateTime(date.Value.Year, date.Value.Month, date.Value.Day,
+                    time.Value.Hours, time.Value.Minutes, time.Value.Seconds);
         }
     }
 }
