@@ -166,13 +166,18 @@ namespace VkGrabber.ViewModel
             var activeGroups = App.VkSettings.Groups.Where(g => g.IsActive).ToList();
             foreach (var group in activeGroups)
             {
-                var groupInfo = App.VkApi.GetGroupsById(group.Name).SingleOrDefault();
+                var groupInfo = App.VkApi.GetGroupsById(group.Name)?.FirstOrDefault();
+                if (groupInfo == null)
+                    continue;
+
                 var res = App.VkApi.GetPosts(groupInfo.Id, 100, group.Offset);
+                if (res == null)
+                    continue;
 
                 // Если с сервера получено 0 постов
                 if (res.Items.Count == 0)
                 {
-                    var dialogResult = new CustomMessageBox().ShowModal($"В группе { group.Name} закончились посты", "Деактивировать", "Обнулить сдвиг", "Удалить");
+                    var dialogResult = new CustomMessageBox().ShowModal($"В группе {group.Name} закончились посты", "Деактивировать", "Обнулить сдвиг", "Удалить");
                     if (dialogResult != null)
                     {
                         switch (dialogResult.Value)
@@ -263,7 +268,7 @@ namespace VkGrabber.ViewModel
 
             await Task.Run(() =>
             {
-                var groupInfo = App.VkApi.GetGroupsById(App.VkSettings.TargetGroup).FirstOrDefault();
+                var groupInfo = App.VkApi.GetGroupsById(App.VkSettings.TargetGroup)?.FirstOrDefault();
                 if (groupInfo == null)
                     MessageBox.Show("Целевая группа задана неверно");
                 else
