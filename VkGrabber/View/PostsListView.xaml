@@ -163,8 +163,6 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Grid Background="Transparent"
-                      MouseDown="Grid_MouseDown"/>
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -236,6 +234,51 @@
                 <ColumnDefinition Width="{Binding PostWidth}"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            
+            <!--Анимация наведения мыши на левый блок-->
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="Control.MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard >
+                            <DoubleAnimation Duration="0:0:0.4" To="0.7"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="grdBackground"/>
+                            <DoubleAnimation Duration="0:0:0.4" To="1"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="tbToTop"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Control.MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard >
+                            <DoubleAnimation Duration="0:0:0.4" To="0"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="grdBackground"/>
+                            <DoubleAnimation Duration="0:0:0.4" To="0.3"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="tbToTop"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+
+            <!--Левый блок для перемотки списка постов в начало-->
+            <Grid Background="Transparent"
+                  MouseDown="Grid_MouseDown">
+                <Grid Width="120"
+                      HorizontalAlignment="Left">
+                    <Grid Background="LightSteelBlue"
+                          Opacity="0"
+                          Name="grdBackground"/>
+                    <TextBlock Text="^ Наверх"
+                               FontSize="15"
+                               Foreground="SteelBlue"
+                               HorizontalAlignment="Center"
+                               Opacity="0.3"
+                               Name="tbToTop"/>
+                </Grid>
+            </Grid>
 
             <!--Индикатор загрузки-->
             <StackPanel Visibility="{Binding LoadingIndicatorVisibility}"

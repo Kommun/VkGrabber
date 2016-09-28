@@ -37,5 +37,19 @@ namespace VkGrabber.Model
                 OnPropertyChanged("Offset");
             }
         }
+
+        private bool _isActive = true;
+        /// <summary>
+        /// Активна ли группа
+        /// </summary>
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged("IsActive");
+            }
+        }
     }
 }

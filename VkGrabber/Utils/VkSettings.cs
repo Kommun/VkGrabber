@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace VkGrabber.Utils
         /// <summary>
         /// Список групп, из которых будут браться посты
         /// </summary>
-        public List<Group> Groups { get; set; } = new List<Group>();
+        public ObservableCollection<Group> Groups { get; set; } = new ObservableCollection<Group>();
 
         /// <summary>
         /// Название целевой группы

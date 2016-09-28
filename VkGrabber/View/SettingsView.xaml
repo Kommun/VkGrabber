@@ -16,6 +16,8 @@
                 <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
                   AutoGenerateColumns="False">
                     <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="Активна"
+                                    Binding="{Binding IsActive}"/>
                         <DataGridTextColumn Header="Название или Id группы"
                                     Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="Кол-во лайков"

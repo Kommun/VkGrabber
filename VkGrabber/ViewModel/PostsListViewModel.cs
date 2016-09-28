@@ -11,6 +11,7 @@ using System.Diagnostics;
 using VkGrabber.Utils;
 using VkGrabber.Model.Rest;
 using VkGrabber.Model.Messenger;
+using VkGrabber.Controls;
 
 namespace VkGrabber.ViewModel
 {
@@ -161,13 +162,33 @@ namespace VkGrabber.ViewModel
         private void Grab()
         {
             List<Post> posts = new List<Post>();
-            foreach (var group in App.VkSettings.Groups)
+
+            var activeGroups = App.VkSettings.Groups.Where(g => g.IsActive).ToList();
+            foreach (var group in activeGroups)
             {
                 var groupInfo = App.VkApi.GetGroupsById(group.Name).SingleOrDefault();
                 var res = App.VkApi.GetPosts(groupInfo.Id, 100, group.Offset);
 
+                // Если с сервера получено 0 постов
                 if (res.Items.Count == 0)
-                    MessageBox.Show($"В группе {group.Name} закончились посты");
+                {
+                    var dialogResult = new CustomMessageBox().ShowModal($"В группе { group.Name} закончились посты", "Деактивировать", "Обнулить сдвиг", "Удалить");
+                    if (dialogResult != null)
+                    {
+                        switch (dialogResult.Value)
+                        {
+                            case 0:
+                                group.IsActive = false;
+                                break;
+                            case 1:
+                                group.Offset = 0;
+                                break;
+                            case 2:
+                                App.VkSettings.Groups.Remove(group);
+                                break;
+                        }
+                    }
+                }
 
                 res.Items.ForEach(p => p.GroupInfo = groupInfo);
 
@@ -282,7 +303,9 @@ namespace VkGrabber.ViewModel
         /// <param name="parameter"></param>
         private void GrabNext(object parameter)
         {
-            App.VkSettings.Groups.ForEach(g => g.Offset += 100);
+            foreach (var group in App.VkSettings.Groups)
+                group.Offset += 100;
+
             Grab();
         }
 
@@ -301,7 +324,7 @@ namespace VkGrabber.ViewModel
         /// <param name="parameter"></param>
         private async void PostAtTime(object parameter = null)
         {
-            var time = new Controls.DateTimeDialog().ShowModal();
+            var time = new DateTimeDialog().ShowModal();
 
             if (time == null)
                 return;

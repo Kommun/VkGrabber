@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VkGrabber.Utils;
+using VkGrabber.Model.Messenger;
 
 namespace VkGrabber.View
 {
@@ -24,6 +26,8 @@ namespace VkGrabber.View
         {
             InitializeComponent();
             DataContext = new ViewModel.PostsListViewModel();
+
+            Messenger.Default.Register(this, (GrabMessage o) => sw.ScrollToTop());
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
