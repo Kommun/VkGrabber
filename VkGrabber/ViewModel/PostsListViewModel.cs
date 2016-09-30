@@ -168,7 +168,13 @@ namespace VkGrabber.ViewModel
             {
                 var groupInfo = App.VkApi.GetGroupsById(group.Name)?.FirstOrDefault();
                 if (groupInfo == null)
+                {
+                    var dialogResult = new CustomMessageBox().ShowModal($"Группа '{group.Name}' не найдена. Удалить ее из списка?", "Да", "Нет");
+                    if (dialogResult == 0)
+                        App.VkSettings.Groups.Remove(group);
+
                     continue;
+                }
 
                 var res = App.VkApi.GetPosts(groupInfo.Id, 100, group.Offset);
                 if (res == null)
@@ -262,20 +268,25 @@ namespace VkGrabber.ViewModel
         /// </summary>
         /// <param name="post"></param>
         /// <returns></returns>
-        private async Task Post(Post post, DateTimeOffset? date = null)
+        private async Task<bool> Post(Post post, DateTimeOffset? date = null)
         {
+            bool success = false;
             LoadingIndicatorVisibility = Visibility.Visible;
 
             await Task.Run(() =>
             {
                 var groupInfo = App.VkApi.GetGroupsById(App.VkSettings.TargetGroup)?.FirstOrDefault();
                 if (groupInfo == null)
+                {
                     MessageBox.Show("Целевая группа задана неверно");
-                else
-                    App.VkApi.Post(groupInfo.Id.ToString(), true, post.Text, post.Attachments, date);
+                    return;
+                }
+
+                success = App.VkApi.Post(groupInfo.Id.ToString(), true, post.Text, post.Attachments, date);
             });
 
             LoadingIndicatorVisibility = Visibility.Collapsed;
+            return success;
         }
 
         /// <summary>
@@ -359,8 +370,9 @@ namespace VkGrabber.ViewModel
                 MessageBox.Show("Дата следующего поста должна быть больше текущей");
             else
             {
-                await Post(parameter as Post, App.VkSettings.SchedulerSettings.NextPostDate);
-                App.VkSettings.SchedulerSettings.CalculateNextPostDate();
+                var success = await Post(parameter as Post, App.VkSettings.SchedulerSettings.NextPostDate);
+                if (success)
+                    App.VkSettings.SchedulerSettings.CalculateNextPostDate();
             }
         }
 
