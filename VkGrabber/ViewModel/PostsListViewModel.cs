@@ -7,6 +7,7 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using System.Diagnostics;
 using VkGrabber.Utils;
 using VkGrabber.Model.Rest;
@@ -18,6 +19,7 @@ namespace VkGrabber.ViewModel
     public class PostsListViewModel : PropertyChangedBase
     {
         private Post _currentZoomedPost;
+        private Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 
         #region Commands
 
@@ -145,11 +147,11 @@ namespace VkGrabber.ViewModel
             FindImageCommand = new CustomCommand(FindImage);
             ClearListCommand = new CustomCommand(ClearList);
 
-            Messenger.Default.Register(this, (GrabMessage o) =>
-            {
-                ClearList();
-                Grab();
-            });
+            Messenger.Default.Register(this, async (GrabMessage o) =>
+             {
+                 ClearList();
+                 await Grab();
+             });
 
             Grab();
         }
@@ -159,14 +161,12 @@ namespace VkGrabber.ViewModel
         /// <summary>
         /// Получить список постов
         /// </summary>
-        private void Grab()
+        private async Task Grab()
         {
-            List<Post> posts = new List<Post>();
-
             var activeGroups = App.VkSettings.Groups.Where(g => g.IsActive).ToList();
             foreach (var group in activeGroups)
             {
-                var groupInfo = App.VkApi.GetGroupsById(group.Name)?.FirstOrDefault();
+                var groupInfo = (await App.VkApi.GetGroupsById(group.Name))?.FirstOrDefault();
                 if (groupInfo == null)
                 {
                     var dialogResult = new CustomMessageBox().ShowModal($"Группа '{group.Name}' не найдена. Удалить ее из списка?", "Да", "Нет");
@@ -176,7 +176,7 @@ namespace VkGrabber.ViewModel
                     continue;
                 }
 
-                var res = App.VkApi.GetPosts(groupInfo.Id, 100, group.Offset);
+                var res = await App.VkApi.GetPosts(groupInfo.Id, 100, group.Offset);
                 if (res == null)
                     continue;
 
@@ -201,22 +201,23 @@ namespace VkGrabber.ViewModel
                     }
                 }
 
-                res.Items.ForEach(p => p.GroupInfo = groupInfo);
-
                 // Отбираем посты, к которым ничего не прикреплено или прикреплены только фото, а также фильтруем по количеству лайков и репостов
-                posts.AddRange(res.Items.Where(p =>
-                    p.Attachments?.All(a => a.Type == "photo") != false
-                    && p.Likes.Count >= group.LikeCount
-                    && p.Reposts.Count >= group.RepostCount));
+                res.Items
+                    .Where(p =>
+                        p.Attachments?.All(a => a.Type == "photo") != false
+                        && p.Likes.Count >= group.LikeCount
+                        && p.Reposts.Count >= group.RepostCount)
+                    .ToList()
+                    .ForEach(p =>
+                    {
+                        p.GroupInfo = groupInfo;
+
+                        if (p.Attachments?.Count > 0)
+                            SetPhotoSize(p.Attachments.Select(a => a.Photo).ToList());
+
+                        _dispatcher.Invoke(() => FilteredPosts.Add(p));
+                    });
             }
-
-            posts.ForEach(p =>
-            {
-                if (p.Attachments?.Count > 0)
-                    SetPhotoSize(p.Attachments.Select(a => a.Photo).ToList());
-
-                FilteredPosts.Add(p);
-            });
         }
 
         /// <summary>
@@ -273,17 +274,14 @@ namespace VkGrabber.ViewModel
             bool success = false;
             LoadingIndicatorVisibility = Visibility.Visible;
 
-            await Task.Run(() =>
+            var groupInfo = (await App.VkApi.GetGroupsById(App.VkSettings.TargetGroup))?.FirstOrDefault();
+            if (groupInfo == null)
             {
-                var groupInfo = App.VkApi.GetGroupsById(App.VkSettings.TargetGroup)?.FirstOrDefault();
-                if (groupInfo == null)
-                {
-                    MessageBox.Show("Целевая группа задана неверно");
-                    return;
-                }
+                MessageBox.Show("Целевая группа задана неверно");
+                return false;
+            }
 
-                success = App.VkApi.Post(groupInfo.Id.ToString(), true, post.Text, post.Attachments, date);
-            });
+            success = await App.VkApi.Post(groupInfo.Id.ToString(), true, post.Text, post.Attachments, date);
 
             LoadingIndicatorVisibility = Visibility.Collapsed;
             return success;

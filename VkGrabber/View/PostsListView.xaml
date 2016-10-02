@@ -58,9 +58,7 @@
         <DataTemplate x:Key="postTemplate">
             <Border BorderThickness="1"
                     BorderBrush="Gray"
-                    Padding="20"
-                    Margin="0,5"
-                    Width="{Binding DataContext.PostWidth, RelativeSource={RelativeSource AncestorType=Page}}"
+                    Padding="20"            
                     Background="White"
                     VerticalAlignment="Top">
                 <StackPanel>
@@ -152,48 +150,74 @@
             </Border>
         </DataTemplate>
 
+        <!--Анимация наведения мыши на левый блок-->
+        <Storyboard x:Key="mouseEnter">
+            <DoubleAnimation Duration="0:0:0.4" To="0.7"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="grdBackground"/>
+            <DoubleAnimation Duration="0:0:0.4" To="1"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="tbToTop"/>
+        </Storyboard>
+
+        <Storyboard x:Key="mouseLeave">
+            <DoubleAnimation Duration="0:0:0.4" To="0"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="grdBackground"/>
+            <DoubleAnimation Duration="0:0:0.4" To="0.3"
+                                             Storyboard.TargetProperty="Opacity"
+                                             Storyboard.TargetName="tbToTop"/>
+        </Storyboard>
+
     </Page.Resources>
 
     <Grid>
-        <ScrollViewer Name="sw"
-                      Background="LightGray">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <!--Список постов-->
-                    <ItemsControl ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
-                                  ItemTemplate="{StaticResource postTemplate}"
-                                  HorizontalContentAlignment="Stretch">
-                    </ItemsControl>
+        <Grid Background="LightGray">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                    <!--Кнопки "Очистить" и "Загрузить еще" под списком постов-->
-                    <Grid Grid.Row="1" 
+            <!--Список постов-->
+            <ListView Name="lwPosts"
+                      MouseLeftButtonDown="lwPosts_MouseLeftButtonDown"
+                      MouseMove="lwPosts_MouseMove"
+                      ItemsSource="{Binding FilteredPosts, Mode=TwoWay}"
+                      ItemTemplate="{StaticResource postTemplate}"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Focusable" Value="false"/>
+                        <Setter Property="Width" Value="{Binding DataContext.PostWidth, RelativeSource={RelativeSource AncestorType=Page}}"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0,5"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+
+            <!--Кнопки "Очистить" и "Загрузить еще" под списком постов-->
+            <Grid Grid.Row="1" 
                           Width="{Binding PostWidth}"
                           Margin="0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Button Content="Очистить список"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Content="Очистить список"
                                 Command="{Binding ClearListCommand}"
                                 Style="{StaticResource customButton}"/>
-                        <Button Content="Загрузить еще"
+                <Button Content="Загрузить еще"
                                 Command="{Binding GrabNextCommand}"
                                 Style="{StaticResource customButton}"
                                 Grid.Column="2"/>
-                    </Grid>
-                </Grid>
             </Grid>
-        </ScrollViewer>
+        </Grid>
 
         <!--Увеличенное фото-->
         <Grid Visibility="{Binding ZoomedPhotoVisibility}">
@@ -233,39 +257,13 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="{Binding PostWidth}"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="{x:Static SystemParameters.VerticalScrollBarWidth}" />
             </Grid.ColumnDefinitions>
-            
-            <!--Анимация наведения мыши на левый блок-->
-            <Grid.Triggers>
-                <EventTrigger RoutedEvent="Control.MouseEnter">
-                    <BeginStoryboard>
-                        <Storyboard >
-                            <DoubleAnimation Duration="0:0:0.4" To="0.7"
-                                             Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="grdBackground"/>
-                            <DoubleAnimation Duration="0:0:0.4" To="1"
-                                             Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="tbToTop"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="Control.MouseLeave">
-                    <BeginStoryboard>
-                        <Storyboard >
-                            <DoubleAnimation Duration="0:0:0.4" To="0"
-                                             Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="grdBackground"/>
-                            <DoubleAnimation Duration="0:0:0.4" To="0.3"
-                                             Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="tbToTop"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Grid.Triggers>
 
             <!--Левый блок для перемотки списка постов в начало-->
-            <Grid Background="Transparent"
-                  MouseDown="Grid_MouseDown">
+            <Grid Name="grdToTop"
+                  Background="Transparent"
+                  IsHitTestVisible="False">
                 <Grid Width="120"
                       HorizontalAlignment="Left">
                     <Grid Background="LightSteelBlue"

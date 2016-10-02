@@ -16,6 +16,8 @@ namespace VkGrabber.Utils
         const string BaseUrl = "https://api.vk.com/method";
 
         private readonly VkSettings _settings;
+        private int _queriesCountLastSecond;
+        private const int _maxQueriesCountPerSecond = 3;
 
         #region ErrorDescriptions
 
@@ -65,6 +67,16 @@ namespace VkGrabber.Utils
         public VkApi(VkSettings settings)
         {
             _settings = settings;
+
+            // Обнуляем счетчик запросов раз в секунду
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(1000);
+                    _queriesCountLastSecond = 0;
+                }
+            });
         }
 
         /// <summary>
@@ -73,14 +85,18 @@ namespace VkGrabber.Utils
         /// <typeparam name="T"></typeparam>
         /// <param name="request"></param>
         /// <returns></returns>
-        public T Execute<T>(RestRequest request, bool showErrors = true) where T : new()
+        public async Task<T> Execute<T>(RestRequest request, bool showErrors = true) where T : new()
         {
+            while (_queriesCountLastSecond >= _maxQueriesCountPerSecond)
+            { }
+
             var client = new RestClient();
             client.BaseUrl = new Uri(BaseUrl);
             request.AddParameter("access_token", _settings.AccessToken);
             request.AddParameter("v", "5.53");
 
-            var response = client.Execute<ApiResponse<T>>(request);
+            var response = await client.ExecuteTaskAsync<ApiResponse<T>>(request);
+            _queriesCountLastSecond++;
 
             if (response.ErrorException != null)
             {
@@ -103,11 +119,11 @@ namespace VkGrabber.Utils
         /// </summary>
         /// <param name="groupIds">Id групп</param>
         /// <returns></returns>
-        public List<GroupInfo> GetGroupsById(params string[] groupIds)
+        public async Task<List<GroupInfo>> GetGroupsById(params string[] groupIds)
         {
             var request = new RestRequest("groups.getById", Method.GET);
             request.AddParameter("group_ids", string.Join(",", groupIds));
-            return Execute<List<GroupInfo>>(request, false);
+            return await Execute<List<GroupInfo>>(request, false);
         }
 
         /// <summary>
@@ -116,13 +132,13 @@ namespace VkGrabber.Utils
         /// <param name="group">Название группы</param>
         /// <param name="count">Количество постов</param>
         /// <returns></returns>
-        public ListResponse<Post> GetPosts(long groupId, int count, int offset)
+        public async Task<ListResponse<Post>> GetPosts(long groupId, int count, int offset)
         {
             var request = new RestRequest("wall.get", Method.GET);
             request.AddParameter("owner_id", $"-{groupId}");
             request.AddParameter("count", count);
             request.AddParameter("offset", offset);
-            return Execute<ListResponse<Post>>(request);
+            return await Execute<ListResponse<Post>>(request);
         }
 
         /// <summary>
@@ -133,7 +149,7 @@ namespace VkGrabber.Utils
         /// <param name="message">Текст</param>
         /// <param name="attachments">Прикрепленные документы</param>
         /// <returns></returns>
-        public bool Post(string groupId, bool fromGroup, string message, List<Attachment> attachments, DateTimeOffset? publishDate = null)
+        public async Task<bool> Post(string groupId, bool fromGroup, string message, List<Attachment> attachments, DateTimeOffset? publishDate = null)
         {
             var request = new RestRequest("wall.post", Method.POST);
             request.AddParameter("owner_id", $"-{groupId}");
@@ -143,7 +159,7 @@ namespace VkGrabber.Utils
             string attachmentsString = "";
             var client = new WebClient();
             // Получаем сервер для загрузки фото
-            var uploadServer = GetWallUploadServer(groupId);
+            var uploadServer = await GetWallUploadServer(groupId);
 
             string directoryName = "PostImages";
             if (!Directory.Exists(directoryName))
@@ -164,7 +180,7 @@ namespace VkGrabber.Utils
                 File.Delete(fileName);
 
                 // Сохраняем фото на стене
-                var photo = SaveWallPhoto(groupId, uploadResult);
+                var photo = await SaveWallPhoto(groupId, uploadResult);
                 attachmentsString += $"photo{photo.Owner_Id}_{photo.Id},";
             }
 
@@ -173,7 +189,7 @@ namespace VkGrabber.Utils
             if (publishDate != null)
                 request.AddParameter("publish_date", publishDate.Value.ToUnixTimeSeconds());
 
-            var result = Execute<object>(request);
+            var result = await Execute<object>(request);
             return result != null;
         }
 
@@ -182,11 +198,11 @@ namespace VkGrabber.Utils
         /// </summary>
         /// <param name="groupId">Id группы</param>
         /// <returns></returns>
-        public WallUploadServer GetWallUploadServer(string groupId)
+        public async Task<WallUploadServer> GetWallUploadServer(string groupId)
         {
             var request = new RestRequest("photos.getWallUploadServer", Method.GET);
             request.AddParameter("group_id", groupId);
-            return Execute<WallUploadServer>(request);
+            return await Execute<WallUploadServer>(request);
         }
 
         /// <summary>
@@ -195,14 +211,14 @@ namespace VkGrabber.Utils
         /// <param name="groupId">Id группы</param>
         /// <param name="uploadResult">Результат загрузки фото на сервер</param>
         /// <returns></returns>
-        public Photo SaveWallPhoto(string groupId, UploadResult uploadResult)
+        public async Task<Photo> SaveWallPhoto(string groupId, UploadResult uploadResult)
         {
             var request = new RestRequest("photos.saveWallPhoto", Method.POST);
             request.AddParameter("group_id", groupId);
             request.AddParameter("photo", uploadResult.Photo);
             request.AddParameter("server", uploadResult.Server);
             request.AddParameter("hash", uploadResult.Hash);
-            return Execute<List<Photo>>(request).SingleOrDefault();
+            return (await Execute<List<Photo>>(request)).SingleOrDefault();
         }
     }
 }
