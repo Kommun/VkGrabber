@@ -55,6 +55,9 @@
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -131,6 +134,7 @@
     <Compile Include="Model\Messenger\GrabMessage.cs" />
     <Compile Include="Model\Rest\ApiError.cs" />
     <Compile Include="Model\Rest\Attachment.cs" />
+    <Compile Include="Model\Rest\City.cs" />
     <Compile Include="Model\Rest\GroupInfo.cs" />
     <Compile Include="Model\Rest\Like.cs" />
     <Compile Include="Model\Rest\Photo.cs" />
@@ -139,6 +143,7 @@
     <Compile Include="Model\Rest\Repost.cs" />
     <Compile Include="Model\Rest\ApiResponse.cs" />
     <Compile Include="Model\Rest\UploadResult.cs" />
+    <Compile Include="Model\Rest\User.cs" />
     <Compile Include="Model\Rest\WallUploadServer.cs" />
     <Compile Include="Utils\Converters\MultiBindingConverter.cs" />
     <Compile Include="Utils\CustomCommand.cs" />

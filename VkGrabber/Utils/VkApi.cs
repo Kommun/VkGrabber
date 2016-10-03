@@ -111,6 +111,19 @@ namespace VkGrabber.Utils
         }
 
         /// <summary>
+        /// Получить информацию о пользователях
+        /// </summary>
+        /// <param name="groupIds"></param>
+        /// <returns></returns>
+        public List<User> GetUsersById(params string[] userIds)
+        {
+            var request = new RestRequest("users.get", Method.GET);
+            request.AddParameter("user_ids", string.Join(",", userIds));
+            request.AddParameter("fields", "photo_50,city");
+            return Execute<List<User>>(request, false);
+        }
+
+        /// <summary>
         /// Получить список постов группы
         /// </summary>
         /// <param name="group">Название группы</param>

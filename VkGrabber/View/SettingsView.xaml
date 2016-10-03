@@ -10,62 +10,109 @@
       Title="SettingsView"
       Background="LightGray">
 
-    <StackPanel>
-        <controls:SettingsSection Header="Основные настройки">
-            <StackPanel>
-                <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
+    <Page.Resources>
+
+        <Style TargetType="TextBlock" x:Key="userNameStyle">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="SteelBlue"/>
+        </Style>
+
+    </Page.Resources>
+
+    <ScrollViewer>
+        <StackPanel>
+
+            <controls:SettingsSection Header="Текущий пользователь">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Width="50" Height="50">
+                        <Border Name="mask" Background="White" CornerRadius="50"/>
+                        <StackPanel>
+                            <StackPanel.OpacityMask>
+                                <VisualBrush Visual="{Binding ElementName=mask}"/>
+                            </StackPanel.OpacityMask>
+                            <Image Source="{Binding CurrentUser.Photo_50}"/>
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="20,0"
+                            Grid.Column="1">
+                        <TextBlock Text="{Binding CurrentUser.First_Name}"
+                               Style="{StaticResource userNameStyle}"/>
+                        <TextBlock Text="{Binding CurrentUser.Last_Name}"
+                               Style="{StaticResource userNameStyle}"
+                               Margin="10,0,0,0"/>
+                    </StackPanel>
+
+                    <Button Content="Выйти"
+                            Command="{Binding LogoutCommand}"
+                            Grid.Column="2"/>
+                </Grid>
+            </controls:SettingsSection>
+
+            <controls:SettingsSection Header="Основные настройки">
+                <StackPanel>
+                    <DataGrid ItemsSource="{Binding VkSettings.Groups, Mode=TwoWay}"
                   AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridCheckBoxColumn Header="Активна"
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Header="Активна"
                                     Binding="{Binding IsActive}"/>
-                        <DataGridTextColumn Header="Название или Id группы"
+                            <DataGridTextColumn Header="Название или Id группы"
                                     Binding="{Binding Name}"/>
-                        <DataGridTextColumn Header="Кол-во лайков"
+                            <DataGridTextColumn Header="Кол-во лайков"
                                     Binding="{Binding LikeCount}"/>
-                        <DataGridTextColumn Header="Кол-во репостов"
+                            <DataGridTextColumn Header="Кол-во репостов"
                                     Binding="{Binding RepostCount}"/>
-                        <DataGridTextColumn Header="Сдвиг"
+                            <DataGridTextColumn Header="Сдвиг"
                                     Binding="{Binding Offset}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                        </DataGrid.Columns>
+                    </DataGrid>
 
-                <TextBlock Text="Название или Id целевой группы (куда будут добавляться посты)"
+                    <TextBlock Text="Название или Id целевой группы (куда будут добавляться посты)"
                    Margin="0,20,0,0"/>
-                <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
+                    <TextBox Text="{Binding VkSettings.TargetGroup, Mode=TwoWay}"/>
 
-                <Button Content="Обновить список записей"
+                    <Button Content="Обновить список записей"
                             Command="{Binding RefreshPostsCommand}"
                             Margin="0,20,0,0"
                             Padding="0,10"/>
-            </StackPanel>
-        </controls:SettingsSection>
+                </StackPanel>
+            </controls:SettingsSection>
 
-        <controls:SettingsSection Header="Планировщик">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal"
+            <controls:SettingsSection Header="Планировщик">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"
                 VerticalAlignment="Top">
-                    <TextBlock Text="Начало: "/>
-                    <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.FromTime, Mode=TwoWay}"/>
+                        <TextBlock Text="Начало: "/>
+                        <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.FromTime, Mode=TwoWay}"/>
 
-                    <TextBlock Text="Конец: "
+                        <TextBlock Text="Конец: "
                    Margin="30,0,0,0"/>
-                    <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.ToTime, Mode=TwoWay}"/>
-                </StackPanel>
+                        <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.ToTime, Mode=TwoWay}"/>
+                    </StackPanel>
 
-                <StackPanel Orientation="Horizontal"
+                    <StackPanel Orientation="Horizontal"
                     Margin="0,20,0,0">
-                    <TextBlock Text="Интервал: "/>
-                    <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.Interval, Mode=TwoWay}"/>
+                        <TextBlock Text="Интервал: "/>
+                        <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.Interval, Mode=TwoWay}"/>
 
-                    <TextBlock Text="Погрешность(+/-): "
+                        <TextBlock Text="Погрешность(+/-): "
                    Margin="30,0,0,0"/>
-                    <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.Error, Mode=TwoWay}"/>
-                </StackPanel>
+                        <controls:TimePicker Time="{Binding VkSettings.SchedulerSettings.Error, Mode=TwoWay}"/>
+                    </StackPanel>
 
-                <TextBlock Text="Дата добавления следующей записи: "
+                    <TextBlock Text="Дата добавления следующей записи: "
                    Margin="0,20,0,0"/>
-                <controls:DateTimePicker DateTime="{Binding VkSettings.SchedulerSettings.NextPostDate, Mode=TwoWay}"/>
-            </StackPanel>
-        </controls:SettingsSection>
-    </StackPanel>
+                    <controls:DateTimePicker DateTime="{Binding VkSettings.SchedulerSettings.NextPostDate, Mode=TwoWay}"/>
+                </StackPanel>
+            </controls:SettingsSection>
+        </StackPanel>
+    </ScrollViewer>
+
 </Page>
