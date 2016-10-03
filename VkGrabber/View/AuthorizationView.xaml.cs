@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Web;
 using VkGrabber.Utils;
+using mshtml;
 
 namespace VkGrabber.View
 {
@@ -38,30 +39,35 @@ namespace VkGrabber.View
 
             if (logout)
             {
-                l = true;
-                wbAuthorization.Navigate("https://vk.com/");
+                wbAuthorization.LoadCompleted += WbAuthorization_LoadCompleted;
+                wbAuthorization.Navigate("https://m.vk.com/");
             }
 
-            wbAuthorization.Navigated += WbAuthorization_Navigated;
-            wbAuthorization.Navigate(string.Format("https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&display=page&response_type=token",
-                  VkSettings.AppId, VkSettings.Scopes, VkSettings.RedirectUri));
+            else {
+                wbAuthorization.Navigated += WbAuthorization_AuthorizeNavigated;
+                wbAuthorization.Navigate(string.Format("https://oauth.vk.com/authorize?client_id={0}&scope={1}&redirect_uri={2}&display=page&response_type=token",
+                      VkSettings.AppId, VkSettings.Scopes, VkSettings.RedirectUri));
+            }
         }
 
-        private void WbAuthorization_Navigated(object sender, NavigationEventArgs e)
+        private void WbAuthorization_LoadCompleted(object sender, NavigationEventArgs e)
         {
-
-            if (l)
+            try
             {
-
-                try
+                var document = wbAuthorization.Document as IHTMLDocument3;
+                var inputs = document.getElementsByTagName("a");
+                foreach (IHTMLElement element in inputs)
                 {
-                    MessageBox.Show(e.Uri.ToString());
-                    mshtml.IHTMLDocument3 doc = wbAuthorization.Document as mshtml.IHTMLDocument3;
-                    doc.getElementById("top_logout_link").click();
+                    var a = element.getAttribute("className");
+                    if (element.getAttribute("className") == "lfm_item")
+                        wbAuthorization.Navigate(element.getAttribute("href"));
                 }
-                catch (Exception ex) { MessageBox.Show(ex.InnerException.Message); }
             }
-            l = false;
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
+
+        private void WbAuthorization_AuthorizeNavigated(object sender, NavigationEventArgs e)
+        {
             if (string.IsNullOrEmpty(e.Uri.Fragment))
                 return;
 
@@ -70,6 +76,11 @@ namespace VkGrabber.View
             App.VkSettings.UserId = urlParams.Get("user_id");
             App.NavigationService = new CustomNavigationService(NavigationService);
             App.NavigationService.Navigate(new RootView());
+        }
+
+        private void WbAuthorization_LogoutNavigated(object sender, NavigationEventArgs e)
+        {
+
         }
     }
 }

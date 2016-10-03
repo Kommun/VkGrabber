@@ -131,12 +131,12 @@ namespace VkGrabber.Utils
         /// </summary>
         /// <param name="groupIds"></param>
         /// <returns></returns>
-        public List<User> GetUsersById(params string[] userIds)
+        public async Task<List<User>> GetUsersById(params string[] userIds)
         {
             var request = new RestRequest("users.get", Method.GET);
             request.AddParameter("user_ids", string.Join(",", userIds));
             request.AddParameter("fields", "photo_50,city");
-            return Execute<List<User>>(request, false);
+            return await Execute<List<User>>(request, false);
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ using VkGrabber.Model.Rest;
 
 namespace VkGrabber.ViewModel
 {
-    public class SettingsViewModel
+    public class SettingsViewModel : PropertyChangedBase
     {
         /// <summary>
         /// Обновить список постов
@@ -22,10 +22,19 @@ namespace VkGrabber.ViewModel
         /// </summary>
         public ICommand LogoutCommand { get; set; } = new CustomCommand((object p) => { App.NavigationService.Navigate(new View.AuthorizationView(true)); });
 
+        private User _currentUser;
         /// <summary>
         /// Текущий пользователь
         /// </summary>
-        public User CurrentUser { get; set; }
+        public User CurrentUser
+        {
+            get { return _currentUser; }
+            set
+            {
+                _currentUser = value;
+                OnPropertyChanged("CurrentUser");
+            }
+        }
 
         /// <summary>
         /// Параметры
@@ -40,7 +49,15 @@ namespace VkGrabber.ViewModel
         /// </summary>
         public SettingsViewModel()
         {
-            CurrentUser = App.VkApi.GetUsersById(VkSettings.UserId).FirstOrDefault();
+            GetCurrentUser();
+        }
+
+        /// <summary>
+        /// Получить информацию о текущем пользователе
+        /// </summary>
+        private async void GetCurrentUser()
+        {
+            CurrentUser = (await App.VkApi.GetUsersById(VkSettings.UserId)).FirstOrDefault();
         }
     }
 }
