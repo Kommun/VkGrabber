@@ -51,6 +51,8 @@
                     </StackPanel>
 
                     <Button Content="Выйти"
+                            Padding="20,10"
+                            VerticalAlignment="Center"
                             Command="{Binding LogoutCommand}"
                             Grid.Column="2"/>
                 </Grid>

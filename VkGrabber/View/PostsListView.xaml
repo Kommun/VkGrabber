@@ -157,7 +157,7 @@
                                              Storyboard.TargetName="grdBackground"/>
             <DoubleAnimation Duration="0:0:0.4" To="1"
                                              Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="tbToTop"/>
+                                             Storyboard.TargetName="tbScroll"/>
         </Storyboard>
 
         <Storyboard x:Key="mouseLeave">
@@ -166,7 +166,7 @@
                                              Storyboard.TargetName="grdBackground"/>
             <DoubleAnimation Duration="0:0:0.4" To="0.3"
                                              Storyboard.TargetProperty="Opacity"
-                                             Storyboard.TargetName="tbToTop"/>
+                                             Storyboard.TargetName="tbScroll"/>
         </Storyboard>
 
     </Page.Resources>
@@ -269,12 +269,12 @@
                     <Grid Background="LightSteelBlue"
                           Opacity="0"
                           Name="grdBackground"/>
-                    <TextBlock Text="^ Наверх"
+                    <TextBlock Name="tbScroll"
                                FontSize="15"
                                Foreground="SteelBlue"
-                               HorizontalAlignment="Center"
-                               Opacity="0.3"
-                               Name="tbToTop"/>
+                               HorizontalAlignment="Left"
+                               Margin="10,10,0,0"
+                               Opacity="0.3"/>
                 </Grid>
             </Grid>
 

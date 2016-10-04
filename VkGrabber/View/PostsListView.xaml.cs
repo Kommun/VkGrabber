@@ -23,6 +23,9 @@ namespace VkGrabber.View
     /// </summary>
     public partial class PostsListView : Page
     {
+        private double? _lastVerticalOffset;
+        private ScrollViewer _sw;
+
         /// <summary>
         /// Находится ли курсор над левой панелью
         /// </summary>
@@ -34,22 +37,40 @@ namespace VkGrabber.View
         public PostsListView()
         {
             InitializeComponent();
+            Loaded += PostsListView_Loaded;
             DataContext = new ViewModel.PostsListViewModel();
 
             // Подписываемся на обновление списка постов
-            Messenger.Default.Register(this, (GrabMessage o) => ScrollToTop());
+            Messenger.Default.Register(this, (GrabMessage o) => _sw?.ScrollToTop());
         }
 
         /// <summary>
-        /// Прокрутить в начало списка
+        /// Обработчик полной загрузки страницы
         /// </summary>
-        private void ScrollToTop()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PostsListView_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                (((VisualTreeHelper.GetChild(lwPosts, 0) as Border).Child) as ScrollViewer).ScrollToVerticalOffset(0);
+                _sw = ((VisualTreeHelper.GetChild(lwPosts, 0) as Border).Child) as ScrollViewer;
+                _sw.ScrollChanged += _sw_ScrollChanged;
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Обработчик прокрутки списка
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _sw_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (_sw.VerticalOffset != 0)
+                tbScroll.Text = "˄ Наверх";
+            else if (_lastVerticalOffset != null)
+                tbScroll.Text = "˅";
+            else tbScroll.Text = "";
         }
 
         /// <summary>
@@ -59,8 +80,16 @@ namespace VkGrabber.View
         /// <param name="e"></param>
         private void lwPosts_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.GetPosition(lwPosts).X <= grdToTop.ActualWidth)
-                ScrollToTop();
+            if (_sw == null || e.GetPosition(lwPosts).X > grdToTop.ActualWidth)
+                return;
+
+            if (_sw.VerticalOffset == 0 && _lastVerticalOffset != null)
+                _sw.ScrollToVerticalOffset(_lastVerticalOffset.Value);
+            else
+            {
+                _lastVerticalOffset = _sw.VerticalOffset;
+                _sw.ScrollToTop();
+            }
         }
 
         /// <summary>
